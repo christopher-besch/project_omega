@@ -150,4 +150,5 @@ cython_debug/
 # Flask files
 .flaskenv
 app.db
+app.sb-journal
 
