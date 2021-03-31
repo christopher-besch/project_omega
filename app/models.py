@@ -34,9 +34,36 @@ class Comment(db.Model):
     def __repr__(self):
         return f"<Post {self.body}>"
 
+
+# represent a single article, but content of article is stored in file
+class Article(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(64))
+    citations =
+
+    def __repr__(self):
+        return f"<Article {self.file_name}"
+
+
 # like biblatex citation
-# class Citation(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
+class Citation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # name of the cited work
+    name = db.Column(db.String(128))
+    # author of the work
+    author = db.Column(db.String(128))
+    # year the work has been published
+    year = db.Column(db.Date)
+
+    def __repr__(self):
+        return f"<Citation {self.name}>"
+
+
+citations = db.Table("citations",
+                     db.Column("article_id", db.Integer,
+                               db.ForeignKey("article.id")),
+                     db.Column("citaton_id", db.Integer,
+                               db.ForeignKey("citation.id")))
 
 
 # load user from database to log them in
