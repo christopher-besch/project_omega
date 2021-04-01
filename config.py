@@ -1,7 +1,5 @@
 import os
 from typing import List
-# basedir = os.path.abspath(os.path.dirname(__file__))
-# print("sqlite:///" + os.path.join(basedir, "app.db"))
 
 
 class Config(object):
@@ -28,9 +26,9 @@ class Config(object):
             break
         idx += 1
 
-    if SQLALCHEMY_DATABASE_URI is None:
-        raise EnvironmentError(
-            "Can't find environment variable: DATABASE_URL")
     if SECRET_KEY is None:
         raise EnvironmentError(
             "Can't find environment variable: SECRET_KEY")
+    if SQLALCHEMY_DATABASE_URI is None:
+        raise EnvironmentError(
+            "Can't find environment variable: DATABASE_URL")
