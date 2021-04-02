@@ -2,7 +2,6 @@ from typing import Optional, Tuple
 import os
 
 from flask import Flask
-from flask.helpers import total_seconds
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate

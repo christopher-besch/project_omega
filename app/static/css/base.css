@@ -1,0 +1,4 @@
+/* move down content <- fixed navbar that is 3.5rem tall */
+body {
+    padding-top: 3.5rem;
+}
