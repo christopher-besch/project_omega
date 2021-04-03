@@ -3,8 +3,8 @@
 ## Build
 
 -   `git clone https://github.com/christopher-besch/project_omega.git --recursive`
--   `python3 -m venv flask_env`
--   `source flask_env/bin/activate`
+-   `python3 -m venv venv`
+-   `source venv/bin/activate`
 -   `pip install -r requirements.txt`
 -   `python3 setup.py > .env`
 
