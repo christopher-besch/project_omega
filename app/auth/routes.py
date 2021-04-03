@@ -23,6 +23,7 @@ def login():
             flash("Invalid username of password", "error")
             return redirect(url_for("auth.login"))
         login_user(user, remember=form.remember_me.data)
+        flash(f"Now logged in as {current_user.username}.", "info")
         # get next page
         next_page = request.args.get("next")
         # check if malisouse redirect to other website

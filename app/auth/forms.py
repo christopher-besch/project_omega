@@ -25,8 +25,18 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
             raise ValidationError("Please us a different username.")
-        if " " in username.data:
-            raise ValidationError("Spaces are not allowed in the username.")
+        # any disallowed characters used?
+        disallowed_characters = set()
+        for char in username.data:
+            if not ord("a") <= ord(char) <= ord("z") and \
+               not ord("A") <= ord(char) <= ord("Z") and \
+               not char == "_":
+                quote = "'" if char != "'" else '"'
+                disallowed_characters.add(f"{quote}{char}{quote}")
+        if len(disallowed_characters) != 0:
+            disallowed_characters_str = ", ".join(disallowed_characters)
+            raise ValidationError(
+                f"Only lower, upper case latin letters and underscores are supported for username; these are not allowed: {disallowed_characters_str}")
 
     # email already taken?
     def validate_email(self, email) -> None:
