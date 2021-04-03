@@ -34,7 +34,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         # unauthorized?
         if user is None or not user.check_password(form.password.data):
-            flash("Invalid username of password")
+            flash("Invalid username of password", "error")
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         # get next page
@@ -63,7 +63,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash("Congratulations, you are now a registered user!")
+        flash("Congratulations, you are now a registered user!", "info")
         return redirect(url_for("login"))
     return render_template("register.html", title="Registet", form=form)
 
@@ -92,3 +92,17 @@ def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+
+
+@app.route("/alert/<error_type>")
+@login_required
+def alert(error_type):
+    flash("TEST ALERT", error_type)
+    flash("TEST ALERT", error_type)
+    flash("TEST ALERT", error_type)
+    flash("TEST ALERT", error_type)
+    flash("TEST ALERT", error_type)
+    flash("TEST ALERT", error_type)
+    flash("TEST ALERT", error_type)
+    flash("TEST ALERT", error_type)
+    return "Marca"

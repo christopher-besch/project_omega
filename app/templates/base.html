@@ -20,7 +20,7 @@
     <link rel="canonical" href="{{ canonical_url }}">
     {% endif %}
     <!-- css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-5.0.0-beta3-dist/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 </head>
 
@@ -57,30 +57,24 @@
         </div>
     </nav>
 
-    <main role="main">
+    <main class="pt-3" role="main">
         <div class="container">
             <!-- flashes -->
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <ul>
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            {% endwith %}
-
-            <!-- main block -->
-            {% block content %}{% endblock %}
-
-            <!-- todo: remove -->
-            <div id="alertDemo" class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>Some</strong> critical notice.
+            {% with messages = get_flashed_messages(with_categories=True) %}
+            {% with category_alias = { "info": "info", "warning": "warning", "error": "danger" } %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category_alias[category] }} alert-dismissible fade show" role="alert">
+                {{ message }}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            {% endfor %}
+            {% endwith %}
+            {% endwith %}
 
+            <!-- main block -->
+            {% block content %}{% endblock %}
             <hr>
         </div>
     </main>
@@ -91,14 +85,6 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/bootstrap-native/bootstrap-native.min.js') }}"></script>
-    <script>
-        document.getElementById("alertDemo").addEventListener("close.bs.alert", function (e) {
-            console.log('The "close.bs.alert" event fired for #' + e.target.id);
-        });
-        document.getElementById('alertDemo').addEventListener('closed.bs.alert', function (e) {
-            console.log('The "closed.bs.alert" event fired for #' + e.target.id);
-        });
-    </script>
 </body>
 
 </html>
