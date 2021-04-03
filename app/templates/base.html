@@ -20,7 +20,7 @@
     <link rel="canonical" href="{{ canonical_url }}">
     {% endif %}
     <!-- css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 </head>
 
@@ -36,21 +36,21 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
                 </li>
                 {% if current_user.is_anonymous %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                    <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
                 </li>
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+                    <a class="nav-link" href="{{ url_for('main.user', username=current_user.username) }}">Profile</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                 </li>
                 {% endif %}
             </ul>
@@ -84,7 +84,7 @@
         <p>&copy; Christopher Besch 2021</p>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/bootstrap-native/bootstrap-native.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap-native.min.js') }}"></script>
 </body>
 
 </html>

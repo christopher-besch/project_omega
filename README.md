@@ -1,8 +1,22 @@
 # project_omega
 
-## unnecessary modules
+## Build
 
--   autopep8
+-   `git clone https://github.com/christopher-besch/project_omega.git --recursive`
+-   `python3 -m venv flask_env`
+-   `source flask_env/bin/activate`
+-   ``pip install -r requirements.txt`
+-   `python3 setup.py > .env`
+
+## Requirements
+
+-   python-dotenv
+-   flask
+-   flask_sqlalchemy
+-   flask_migrate
+-   flask_login
+-   flask_wtf
+-   email_validator
 
 ## commands
 

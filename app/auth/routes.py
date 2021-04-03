@@ -3,12 +3,13 @@ from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
-from app import app, db
+from app import db
+from app.auth import bp
 from app.auth.forms import LoginForm, RegistrationForm
 from app.models import User
 
 
-@app.route("/login", methods=["GET", "POST"])
+@bp.route("/login", methods=["GET", "POST"])
 def login():
     # already logged in?
     if current_user.is_authenticated:
@@ -31,13 +32,13 @@ def login():
     return render_template("auth/login.html", title="Sign In", form=form)
 
 
-@app.route("/logout")
+@bp.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for("main.index"))
 
 
-@app.route("/register", methods=["GET", "POST"])
+@bp.route("/register", methods=["GET", "POST"])
 def register():
     # already logged in?
     if current_user.is_authenticated:
