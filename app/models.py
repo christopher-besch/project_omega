@@ -1,6 +1,5 @@
 from datetime import datetime
-from typing import List
-from enum import Enum, unique
+from flask import abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
@@ -37,12 +36,18 @@ class User(UserMixin, db.Model):
     full_name = db.Column(db.String(120))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # role flags
+    is_admin = db.Column(db.Boolean, default=False)
+
     # many articles
     articles = db.relationship(
         "Article",
         secondary=user_article_association,
         back_populates="authors"
     )
+
+    def change_admin_status(self, status: bool) -> None:
+        self.is_admin = status
 
     # passwords
     def set_password(self, password: str) -> None:

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, current_app, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import db
@@ -48,6 +48,6 @@ def alert(error_type):
 
 
 @bp.route("/marca")
-def marce():
+def marca():
     # smul
-    return "Marca"
+    return "Marca Is Cool!"

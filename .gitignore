@@ -138,7 +138,6 @@ dmypy.json
 cython_debug/
 
 # Flask files
-.env
 app.db
 app.sb-journal
 logs/**

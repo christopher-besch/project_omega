@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import db
@@ -53,3 +53,10 @@ def register():
         flash("Congratulations, you are now a registered user!", "info")
         return redirect(url_for("auth.login"))
     return render_template("auth/register.html", title="Registet", form=form)
+
+
+@bp.route("/change_password<username>", methods=["GET", "POST"])
+def change_password(username: str):
+    if username != current_user.username and current_user.is_admin:
+        abort(501)
+    return "Test"

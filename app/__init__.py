@@ -7,12 +7,14 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
+from flask_moment import Moment
 
 from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
+moment = Moment()
 login.login_view = "auth.login"
 login.login_message = "You need to be logged in to access this page."
 
@@ -23,6 +25,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
+    moment.init_app(app)
 
     # blueprints
     from app.errors import bp as errors_bp
@@ -30,6 +33,9 @@ def create_app(config_class=Config):
 
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
+
+    from app.admin import bp as admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
