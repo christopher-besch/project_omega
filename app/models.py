@@ -33,8 +33,12 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 
+    # data
     full_name = db.Column(db.String(120))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    # flags
+    admin = db.Column(db.Boolean, default=False)
+    vip = db.Column(db.Boolean, default=False)
 
     # role flags
     is_admin = db.Column(db.Boolean, default=False)
