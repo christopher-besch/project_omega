@@ -37,8 +37,7 @@ class User(UserMixin, db.Model):
     full_name = db.Column(db.String(120))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     # flags
-    admin = db.Column(db.Boolean, default=False)
-    vip = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
 
     # role flags
     is_admin = db.Column(db.Boolean, default=False)

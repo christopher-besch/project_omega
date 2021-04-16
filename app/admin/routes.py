@@ -40,6 +40,12 @@ def create_user():
     return render_template("admin/create_user.html", title="Create User", form=form)
 
 
+@login_required
+@bp.route("/delete_user/<username>")
+def delete_user(username: str):
+    return "test"
+
+
 ########
 # ajax #
 ########
@@ -47,8 +53,10 @@ def create_user():
 @login_required
 def set_admin():
     admin_required()
-    user = User.query.filter_by(username=request.form["username"]).first()
-    if user:
-        user.set_admin(True)
-        return jsonify({"success": True})
+    print(request.json["username"])
+    # user = User.query.filter_by(username=request.form["username"]).first()
+    # if user:
+    #     user.set_admin(True)
+    #     return jsonify({"success": True})
+    return "hello"
     return jsonify({"success": False})

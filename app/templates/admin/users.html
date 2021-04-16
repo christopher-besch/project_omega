@@ -2,16 +2,18 @@
 
 {% block content %}
 
+<a type="button" class="btn btn-info" href="{{ url_for('admin.create_user') }}">Create New User</a>
+
 <table class="table">
-    {# head #}
     <thead>
         <tr>
             <th scope="col">name</th>
             <th scope="col">last seen</th>
-            <th scope="col">options</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
     </thead>
-    {# body #}
     <tbody>
         {% for user in users %}
         <tr>
@@ -20,40 +22,35 @@
                 {% if user.is_admin %}👑{% endif %}
             </td>
 
-            <td>{{ moment(user.last_seen).fromNow() }}</td>
-
             <td>
-                {# options table #}
-                <table class="table">
-                    <tr>
-                        <th>
-                            <a type="button" class="btn btn-warning"
-                                href="{{ url_for('auth.change_password', username=user.username) }}">Change Password</a>
-                        </th>
-                        <th>
-                            {% if not user.is_admin %}
-                            <button type="button" class="btn btn-warning"
-                                onclick="set_admin('{{ user.username }}', true);">Make Admin</button>
-                            {% elif user != current_user %}
-                            <button type="button" class="btn btn-danger"
-                                onclick="set_admin('{{ user.username }}', false);">Revoke Admin
-                                Privileges</button>
-                            {% else %}
-                            <button type="button" class="btn btn-outline-danger">Revoke Admin Privileges</button>
-                            {% endif %}
-                        </th>
-                        <th>
-                            {% if user.username != current_user.username %}
-                            <a type="button" class="btn btn-danger"
-                                href="{{ url_for('main.delete', username=user.username) }}">Delete User</a>
-                            {% else %}
-                            <a type="button" class="btn btn-outline-danger" href="#" disabled>Delete User</a>
-                            {% endif %}
-                        </th>
-                    </tr>
-                </table>
+                {{ moment(user.last_seen).fromNow() }}
             </td>
 
+            <td>
+                <a type="button" class="btn btn-primary"
+                    href="{{ url_for('auth.change_password', username=user.username) }}">Change
+                    Password</a>
+            </td>
+            <td>
+                {% if not user.is_admin %}
+                <button type="button" class="btn btn-warning make-admin" data-username="{{ user.username }}">Make
+                    Admin</button>
+                {% elif user != current_user %}
+                <button type="button" class="btn btn-warning revoke-admin" data-username="{{ user.username }}">Revoke
+                    Admin</button>
+                {% else %}
+                <button type="button" class="btn btn-warning" disabled>Revoke Admin</button>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.username != current_user.username %}
+                <a type="button" class="btn btn-danger"
+                    href="{{ url_for('admin.delete_user', username=user.username) }}">Delete
+                    User</a>
+                {% else %}
+                <button type="button" class="btn btn-danger" disabled>Delete User</button>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -62,6 +59,6 @@
 {% endblock %}
 
 {% block scripts %}
-<ajax_url id="set_admin_ajax" url="{{ url_for('set_admin')" />
-<script src="{{ url_for('static', filename='js/users.js') }}"></script>
+<ajax_url id="set_admin_ajax" url="{{ url_for('admin.set_admin') }}" />
+<script type="module" src="{{ url_for('static', filename='js/users.js') }}"></script>
 {% endblock %}
