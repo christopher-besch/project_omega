@@ -3,7 +3,7 @@ export class AjaxAddress {
     constructor(name) {
         this.name = name;
         // load urls from html
-        let obj = document.getElementById(`${name}_ajax`);
+        let obj = document.getElementById(name);
         this.url = obj.getAttribute("url");
     }
     send(msg, callback) {
@@ -20,3 +20,4 @@ export class AjaxAddress {
         request.send(JSON.stringify(msg));
     }
 }
+//# sourceMappingURL=ajax.js.map

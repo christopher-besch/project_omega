@@ -55,8 +55,6 @@ def register():
     return render_template("auth/register.html", title="Registet", form=form)
 
 
-@bp.route("/change_password/<username>", methods=["GET", "POST"])
-def change_password(username: str):
-    if username != current_user.username and current_user.is_admin:
-        abort(501)
+@bp.route("/change_password", methods=["GET", "POST"])
+def change_password():
     return "Test"

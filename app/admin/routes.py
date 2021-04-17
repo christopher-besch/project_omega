@@ -41,22 +41,32 @@ def create_user():
 
 
 @login_required
-@bp.route("/delete_user/<username>")
+@bp.route("/change_password/<username>", methods=["GET", "POST"])
+def change_password(username: str):
+    admin_required()
+    return "change password of " + username
+
+
+@login_required
+@bp.route("/delete_user/<username>", methods=["GET", "POST"])
 def delete_user(username: str):
-    return "test"
+    admin_required()
+    return "delete " + username
 
 
-########
-# ajax #
-########
+# ajax
 @bp.route("/set_admin", methods=["POST"])
 @login_required
 def set_admin():
     admin_required()
-    print(request.json["username"])
-    # user = User.query.filter_by(username=request.form["username"]).first()
-    # if user:
-    #     user.set_admin(True)
-    #     return jsonify({"success": True})
-    return "hello"
+    from time import sleep
+    sleep(3)
+    # todo: type might not be correct <- bad trust in client
+    username: str = request.json["username"]
+    status: bool = request.json["status"]
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.change_admin_status(status)
+        db.session.commit()
+        return jsonify({"success": True})
     return jsonify({"success": False})

@@ -18,38 +18,41 @@
         {% for user in users %}
         <tr>
             <td>
-                {{ user.username }}
-                {% if user.is_admin %}👑{% endif %}
+                {{ user.username }}{% if user.is_admin %}👑{% endif %}
             </td>
-
             <td>
                 {{ moment(user.last_seen).fromNow() }}
             </td>
 
             <td>
-                <a type="button" class="btn btn-primary"
-                    href="{{ url_for('auth.change_password', username=user.username) }}">Change
-                    Password</a>
+                <button {% if user==current_user %}disabled{% endif %} type="button" class="btn btn-primary button-link"
+                    data-url="{{ url_for('admin.change_password', username=user.username) }}">
+                    Change Password
+                </button>
             </td>
             <td>
+                <!-- ajax -->
                 {% if not user.is_admin %}
-                <button type="button" class="btn btn-warning make-admin" data-username="{{ user.username }}">Make
-                    Admin</button>
-                {% elif user != current_user %}
-                <button type="button" class="btn btn-warning revoke-admin" data-username="{{ user.username }}">Revoke
-                    Admin</button>
+                <button type="button" class="btn btn-warning make-admin" data-username="{{ user.username }}">
+                    <span class="spinner-border spinner-border-sm on-loading" style="display: ;"></span>
+                    <span class="on-loading" style="display: none;">Loading...</span>
+                    Make Admin
+                </button>
                 {% else %}
-                <button type="button" class="btn btn-warning" disabled>Revoke Admin</button>
+                <!-- ajax -->
+                <button {% if user==current_user %}disabled{% endif %} type="button"
+                    class="btn btn-warning revoke-admin" data-username="{{ user.username }}">
+                    <span class="spinner-border spinner-border-sm on-loading"></span>
+                    <span class="on-loading">Loading...</span>
+                    Revoke Admin
+                </button>
                 {% endif %}
             </td>
             <td>
-                {% if user.username != current_user.username %}
-                <a type="button" class="btn btn-danger"
-                    href="{{ url_for('admin.delete_user', username=user.username) }}">Delete
-                    User</a>
-                {% else %}
-                <button type="button" class="btn btn-danger" disabled>Delete User</button>
-                {% endif %}
+                <button {% if user==current_user %}disabled{% endif %} type="button" class="btn btn-danger button-link"
+                    data-url="{{ url_for('admin.delete_user', username=user.username) }}">
+                    Delete User
+                </button>
             </td>
         </tr>
         {% endfor %}
@@ -59,6 +62,7 @@
 {% endblock %}
 
 {% block scripts %}
-<ajax_url id="set_admin_ajax" url="{{ url_for('admin.set_admin') }}" />
+<ajax_url id="set-admin" url="{{ url_for('admin.set_admin') }}" />
+
 <script type="module" src="{{ url_for('static', filename='js/users.js') }}"></script>
 {% endblock %}

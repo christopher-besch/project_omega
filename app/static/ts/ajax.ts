@@ -5,7 +5,7 @@ export class AjaxAddress {
     constructor(name: string) {
         this.name = name;
         // load urls from html
-        let obj = document.getElementById(`${name}_ajax`) as HTMLElement;
+        let obj = document.getElementById(name) as HTMLElement;
         this.url = obj.getAttribute("url") as string;
     }
 
