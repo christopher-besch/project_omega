@@ -35,8 +35,8 @@ def create_user():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash("User has been created.", "info")
-        return redirect(url_for("auth.login"))
+        flash(f"{form.username.data} has been created.", "info")
+        return redirect(url_for("admin.users"))
     return render_template("admin/create_user.html", title="Create User", form=form)
 
 
@@ -45,13 +45,6 @@ def create_user():
 def change_password(username: str):
     admin_required()
     return "change password of " + username
-
-
-@login_required
-@bp.route("/delete_user/<username>", methods=["GET", "POST"])
-def delete_user(username: str):
-    admin_required()
-    return "delete " + username
 
 
 # ajax
@@ -71,3 +64,34 @@ def set_admin():
         db.session.commit()
         return jsonify({"success": True})
     return jsonify({"success": False})
+
+
+# delete user
+@bp.route('/delete_user/<username>')
+@login_required
+def delete_user(username):
+    admin_required()
+    user = User.query.filter_by(username=username).first()
+    if user and user != current_user:
+        return render_template("admin/delete_user.html", user=user, title="Delete User")
+    else:
+        return redirect(url_for("admin.users"))
+
+
+# actually deleting an account
+# ajax
+@bp.route('/confirm_delete', methods=['POST'])
+@login_required
+def confirm_delete():
+    admin_required()
+    username = request.json["username"]
+    print("deleting " + username)
+    # searching for user
+    user = User.query.filter_by(username=username).first()
+    if user and user != current_user:
+        # deleting the user
+        db.session.delete(user)
+        db.session.commit()
+        flash('{} has been deleted!'.format(user.username), "info")
+        return jsonify({'success': True})
+    return jsonify({'success': False})

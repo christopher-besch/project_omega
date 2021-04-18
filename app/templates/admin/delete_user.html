@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>User Deletion</h1>
+<p>Are you sure you want to permanently remove <b>{{ user.username }}</b>?</p>
+<!-- ajax -->
+<button type="button" class="btn btn-danger confirm-delete" data-username="{{ user.username }}"
+    data-username="{{ url_for('admin.users') }}" disabled>
+    <div class="spinner-border spinner-border-sm on-loads default-inline"></div>
+    <div class="button-text default-inline">Loading...</div>
+</button>
+{% endblock %}
+
+{% block scripts %}
+<ajax_url id="confirm-delete" url="{{ url_for('admin.confirm_delete') }}" />
+
+<script type="module" src="{{ url_for('static', filename='js/delete_user.js') }}"></script>
+{% endblock %}

@@ -1,3 +1,6 @@
 [submodule "app/static/vendor/bootstrap"]
 	path = app/static/vendor/bootstrap
 	url = https://github.com/christopher-besch/bootstrap_fork.git
+[submodule "app/static/vendor/momentjs"]
+	path = app/static/vendor/momentjs
+	url = https://github.com/christopher-besch/momentjs_fork.git

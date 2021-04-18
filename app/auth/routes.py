@@ -23,7 +23,7 @@ def login():
             flash("Invalid username of password", "error")
             return redirect(url_for("auth.login"))
         login_user(user, remember=form.remember_me.data)
-        flash(f"Now logged in as {current_user.username}.", "info")
+        flash(f"Now logged in as {current_user.username}.", "warning")
         # get next page
         next_page = request.args.get("next")
         # check if malisouse redirect to other website
@@ -37,22 +37,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("main.index"))
-
-
-@bp.route("/register", methods=["GET", "POST"])
-def register():
-    # already logged in?
-    if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash("Congratulations, you are now a registered user!", "info")
-        return redirect(url_for("auth.login"))
-    return render_template("auth/register.html", title="Registet", form=form)
 
 
 @bp.route("/change_password", methods=["GET", "POST"])

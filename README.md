@@ -21,7 +21,6 @@
 -   flask_login
 -   flask_wtf
 -   email_validator
--   flask_moment
 
 ## commands
 

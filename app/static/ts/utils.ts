@@ -1,5 +1,7 @@
+declare var moment: any;
+
 // represent one endpoint the client can talk to
-export class AjaxAddress {
+class AjaxAddress {
     private name;
     private url: string;
     constructor(name: string) {
@@ -22,6 +24,13 @@ export class AjaxAddress {
         request.setRequestHeader("Content-Type", "application/json");
         request.send(JSON.stringify(msg));
     }
+}
+
+// return dictionary with required urls
+export function get_ajax_urls(names: string[]): { [name: string]: AjaxAddress } {
+    let ajax_urls: { [name: string]: AjaxAddress } = {};
+    for (let name of names) ajax_urls[name] = new AjaxAddress(name);
+    return ajax_urls;
 }
 
 // add click listener to buttons of <button_class>
@@ -52,4 +61,14 @@ export function set_load_status(element: HTMLElement, loading: boolean, text = "
         "button-text"
     ) as HTMLCollectionOf<HTMLElement>;
     text_element[0].innerText = text;
+}
+
+export function add_moments(): void {
+    let moment_divs = document.getElementsByClassName(
+        "moment-from-now"
+    ) as HTMLCollectionOf<HTMLDivElement>;
+    for (let moment_div of moment_divs) {
+        let this_moment = moment(moment_div.dataset.time as string, "YYYY-MM-DD HH:mm:ss.x");
+        moment_div.innerText = this_moment.fromNow();
+    }
 }

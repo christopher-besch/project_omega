@@ -1,5 +1,5 @@
 // represent one endpoint the client can talk to
-export class AjaxAddress {
+class AjaxAddress {
     constructor(name) {
         this.name = name;
         // load urls from html
@@ -19,6 +19,13 @@ export class AjaxAddress {
         request.setRequestHeader("Content-Type", "application/json");
         request.send(JSON.stringify(msg));
     }
+}
+// return dictionary with required urls
+export function get_ajax_urls(names) {
+    let ajax_urls = {};
+    for (let name of names)
+        ajax_urls[name] = new AjaxAddress(name);
+    return ajax_urls;
 }
 // add click listener to buttons of <button_class>
 export function add_button_listener(button_class, callback) {
@@ -42,5 +49,12 @@ export function set_load_status(element, loading, text = "Loading...") {
     // update text
     let text_element = element.getElementsByClassName("button-text");
     text_element[0].innerText = text;
+}
+export function add_moments() {
+    let moment_divs = document.getElementsByClassName("moment-from-now");
+    for (let moment_div of moment_divs) {
+        let this_moment = moment(moment_div.dataset.time, "YYYY-MM-DD HH:mm:ss.x");
+        moment_div.innerText = this_moment.fromNow();
+    }
 }
 //# sourceMappingURL=utils.js.map

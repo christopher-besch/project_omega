@@ -7,6 +7,7 @@
     <thead>
         <tr>
             <th scope="col">name</th>
+            <th scope="col">email</th>
             <th scope="col">last seen</th>
             <th scope="col"></th>
             <th scope="col"></th>
@@ -22,7 +23,10 @@
                     data-username="{{ user.username }}">👑</div>
             </td>
             <td>
-                {{ moment(user.last_seen).fromNow() }}
+                {{ user.email }}
+            </td>
+            <td>
+                <div class="moment-from-now" data-time="{{ user.last_seen }}">{{ user.last_seen }}</div>
             </td>
 
             <td>
@@ -35,14 +39,14 @@
                 {% if not user.is_admin %}
                 <!-- ajax -->
                 <button type="button" class="btn btn-warning toggle-admin" data-username="{{ user.username }}"
-                    data-status="false">
+                    data-admin-status="false">
                     <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
                     <div class="button-text default-inline">Make Admin</div>
                 </button>
                 {% else %}
                 <!-- ajax -->
                 <button {% if user==current_user %}disabled{% endif %} type="button"
-                    class="btn btn-warning toggle-admin" data-username="{{ user.username }}" data-status="true">
+                    class="btn btn-warning toggle-admin" data-username="{{ user.username }}" data-admin-status="true">
                     <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
                     <div class="button-text default-inline">Revoke Admin</div>
                 </button>
