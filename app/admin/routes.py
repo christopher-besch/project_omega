@@ -59,11 +59,12 @@ def delete_user(username: str):
 @login_required
 def set_admin():
     admin_required()
-    from time import sleep
-    sleep(3)
+    # from time import sleep
+    # sleep(1)
     # todo: type might not be correct <- bad trust in client
     username: str = request.json["username"]
     status: bool = request.json["status"]
+    print(f"{username} to {status}")
     user = User.query.filter_by(username=username).first()
     if user:
         user.change_admin_status(status)

@@ -3,6 +3,11 @@ body {
     padding-top: 3.5rem;
 }
 
-.on-loading {
+/* ajax button loading */
+.on-loads {
     display: none;
+}
+
+.button-text {
+    display: inline-block;
 }

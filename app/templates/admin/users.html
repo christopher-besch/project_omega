@@ -31,20 +31,19 @@
                 </button>
             </td>
             <td>
-                <!-- ajax -->
                 {% if not user.is_admin %}
-                <button type="button" class="btn btn-warning make-admin" data-username="{{ user.username }}">
-                    <span class="spinner-border spinner-border-sm on-loading" style="display: ;"></span>
-                    <span class="on-loading" style="display: none;">Loading...</span>
-                    Make Admin
+                <!-- ajax -->
+                <button type="button" class="btn btn-warning toggle-admin" data-username="{{ user.username }}"
+                    data-status="false">
+                    <div class="spinner-border spinner-border-sm on-loads"></div>
+                    <div class="button-text">Make Admin</div>
                 </button>
                 {% else %}
                 <!-- ajax -->
                 <button {% if user==current_user %}disabled{% endif %} type="button"
-                    class="btn btn-warning revoke-admin" data-username="{{ user.username }}">
-                    <span class="spinner-border spinner-border-sm on-loading"></span>
-                    <span class="on-loading">Loading...</span>
-                    Revoke Admin
+                    class="btn btn-warning toggle-admin" data-username="{{ user.username }}" data-status="true">
+                    <div class="spinner-border spinner-border-sm on-loads"></div>
+                    <div class="button-text">Revoke Admin</div>
                 </button>
                 {% endif %}
             </td>
