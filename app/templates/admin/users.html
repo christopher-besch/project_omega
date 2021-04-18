@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <a type="button" class="btn btn-info" href="{{ url_for('admin.create_user') }}">Create New User</a>
 
 <table class="table">
@@ -18,7 +17,9 @@
         {% for user in users %}
         <tr>
             <td>
-                {{ user.username }}{% if user.is_admin %}👑{% endif %}
+                {{ user.username }}
+                <div class="is-admin {% if not user.is_admin%}default-hidden{% else %}default-inline{% endif %}"
+                    data-username="{{ user.username }}">👑</div>
             </td>
             <td>
                 {{ moment(user.last_seen).fromNow() }}
@@ -35,15 +36,15 @@
                 <!-- ajax -->
                 <button type="button" class="btn btn-warning toggle-admin" data-username="{{ user.username }}"
                     data-status="false">
-                    <div class="spinner-border spinner-border-sm on-loads"></div>
-                    <div class="button-text">Make Admin</div>
+                    <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
+                    <div class="button-text default-inline">Make Admin</div>
                 </button>
                 {% else %}
                 <!-- ajax -->
                 <button {% if user==current_user %}disabled{% endif %} type="button"
                     class="btn btn-warning toggle-admin" data-username="{{ user.username }}" data-status="true">
-                    <div class="spinner-border spinner-border-sm on-loads"></div>
-                    <div class="button-text">Revoke Admin</div>
+                    <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
+                    <div class="button-text default-inline">Revoke Admin</div>
                 </button>
                 {% endif %}
             </td>

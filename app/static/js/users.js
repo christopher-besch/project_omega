@@ -1,4 +1,10 @@
 import { AjaxAddress, add_button_listener, set_load_status } from "./utils.js";
+function set_admin_logo(username, status) {
+    let logos = document.getElementsByClassName("is-admin");
+    for (let logo of logos)
+        if (logo.dataset.username === username)
+            logo.style.display = status ? "inline-block" : "none";
+}
 function toggle_admin(button) {
     let current_status = JSON.parse(button.dataset.status);
     let msg = {
@@ -9,8 +15,12 @@ function toggle_admin(button) {
     ajax_urls["set_admin"].send(msg, (response, success) => {
         // admin status got changed?
         if (success && response.success === true) {
+            // button text
             set_load_status(button, false, msg.status ? "Revoke Admin" : "Make Admin");
+            // button status
             button.dataset.status = JSON.stringify(msg.status);
+            // is-admin logo
+            set_admin_logo(msg.username, msg.status);
         }
         else
             set_load_status(button, false, "Failure");

@@ -42,17 +42,11 @@ export function add_button_listener(
 // hide or unhide spinner
 export function set_load_status(element: HTMLElement, loading: boolean, text = "Loading..."): void {
     let on_loads = element.getElementsByClassName("on-loads") as HTMLCollectionOf<HTMLElement>;
-    if (loading) {
-        // disable button
-        element.setAttribute("disabled", "");
-        // unhide spinner
-        for (let on_load of on_loads) on_load.style.display = "inline-block";
-    } else {
-        // enable button
-        element.removeAttribute("disabled");
-        // hide spinner
-        for (let on_load of on_loads) on_load.style.display = "none";
-    }
+    // hide or unhide spinner
+    for (let on_load of on_loads) on_load.style.display = loading ? "inline-block" : "none";
+    // enable or disable button
+    if (loading) element.setAttribute("disabled", "");
+    else element.removeAttribute("disabled");
     // update text
     let text_element = element.getElementsByClassName(
         "button-text"

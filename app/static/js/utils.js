@@ -31,20 +31,14 @@ export function add_button_listener(button_class, callback) {
 // hide or unhide spinner
 export function set_load_status(element, loading, text = "Loading...") {
     let on_loads = element.getElementsByClassName("on-loads");
-    if (loading) {
-        // disable button
+    // hide or unhide spinner
+    for (let on_load of on_loads)
+        on_load.style.display = loading ? "inline-block" : "none";
+    // enable or disable button
+    if (loading)
         element.setAttribute("disabled", "");
-        // unhide spinner
-        for (let on_load of on_loads)
-            on_load.style.display = "inline-block";
-    }
-    else {
-        // enable button
+    else
         element.removeAttribute("disabled");
-        // hide spinner
-        for (let on_load of on_loads)
-            on_load.style.display = "none";
-    }
     // update text
     let text_element = element.getElementsByClassName("button-text");
     text_element[0].innerText = text;
