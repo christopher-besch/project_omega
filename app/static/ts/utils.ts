@@ -68,7 +68,7 @@ export function add_moments(): void {
         "moment-from-now"
     ) as HTMLCollectionOf<HTMLDivElement>;
     for (let moment_div of moment_divs) {
-        let this_moment = moment(moment_div.dataset.time as string, "YYYY-MM-DD HH:mm:ss.x");
+        let this_moment = moment.utc(moment_div.dataset.time as string, "YYYY-MM-DD HH:mm:ss.SSS");
         moment_div.innerText = this_moment.fromNow();
     }
 }

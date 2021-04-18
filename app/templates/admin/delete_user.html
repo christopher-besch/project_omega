@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>User Deletion</h1>
+<h3>User Deletion</h3>
 <p>Are you sure you want to permanently remove <b>{{ user.username }}</b>?</p>
 <!-- ajax -->
 <button type="button" class="btn btn-danger confirm-delete" data-username="{{ user.username }}"

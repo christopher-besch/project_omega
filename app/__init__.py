@@ -1,10 +1,11 @@
+from datetime import datetime
 from typing import Optional, Tuple
 import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
@@ -16,7 +17,7 @@ login = LoginManager()
 login.login_view = "auth.login"
 login.login_message = "You need to be logged in to access this page."
 
-def create_app(config_class=Config):
+def create_app(config_class=Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -68,6 +69,13 @@ def create_app(config_class=Config):
 
         app.logger.setLevel(logging.INFO)
         app.logger.info("Project Omega startup")
+    
+    # update last seen
+    @app.before_request
+    def before_request():
+        if current_user.is_authenticated:
+            current_user.last_seen = datetime.utcnow()
+            db.session.commit()
     
     return app
 

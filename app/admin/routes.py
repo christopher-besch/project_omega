@@ -7,7 +7,7 @@ from flask_login.utils import login_required
 from app import db
 from app import admin
 from app.admin import bp
-from app.admin.forms import CreateUserForm
+from app.admin.forms import ChangePasswordForm, CreateUserForm
 from app.models import User
 
 
@@ -16,35 +16,36 @@ def admin_required() -> None:
         abort(401)
 
 
-@bp.route("/users")
+# includes user creation form
+@bp.route("/users", methods=["GET", "POST"])
 @login_required
 def users():
     admin_required()
-    users = User.query.all()
-    return render_template("admin/users.html", users=users, title="User Overview")
-
-
-@login_required
-@bp.route("/create_user", methods=["GET", "POST"])
-def create_user():
-    admin_required()
     form = CreateUserForm()
+    users = User.query.all()
     if form.validate_on_submit():
         user = User(username=form.username.data,
-                    email=form.email.data, is_admin=form.is_admin.data)
+                    email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash(f"{form.username.data} has been created.", "info")
         return redirect(url_for("admin.users"))
-    return render_template("admin/create_user.html", title="Create User", form=form)
+    return render_template("admin/users.html", users=users, form=form, title="User Overview")
 
 
 @login_required
 @bp.route("/change_password/<username>", methods=["GET", "POST"])
 def change_password(username: str):
     admin_required()
-    return "change password of " + username
+    form = ChangePasswordForm()
+    user = User.query.filter_by(username=username).first_or_404()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash(f"The password of {username} got changed.", "info")
+        return redirect(url_for("admin.users"))
+    return render_template("admin/change_password.html", user=user, form=form, title="Change Password")
 
 
 # ajax
@@ -52,8 +53,6 @@ def change_password(username: str):
 @login_required
 def set_admin():
     admin_required()
-    # from time import sleep
-    # sleep(1)
     # todo: type might not be correct <- bad trust in client
     username: str = request.json["username"]
     status: bool = request.json["status"]

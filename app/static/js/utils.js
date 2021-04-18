@@ -53,7 +53,7 @@ export function set_load_status(element, loading, text = "Loading...") {
 export function add_moments() {
     let moment_divs = document.getElementsByClassName("moment-from-now");
     for (let moment_div of moment_divs) {
-        let this_moment = moment(moment_div.dataset.time, "YYYY-MM-DD HH:mm:ss.x");
+        let this_moment = moment.utc(moment_div.dataset.time, "YYYY-MM-DD HH:mm:ss.SSS");
         moment_div.innerText = this_moment.fromNow();
     }
 }
