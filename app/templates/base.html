@@ -28,37 +28,47 @@
 
 <body>
     <!-- navbar -->
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-light">
         <a class="navbar-brand" href="{{ url_for('main.index') }}">Project Omega</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"
-            aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
+            aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+                {% if not current_user.is_anonymous %}
+                {% if current_user.is_admin %}
+                <!-- admin controls -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbar-admin-dropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Admin
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbar-admin-dropdown">
+                        <a class="dropdown-item" href="{{ url_for('admin.users') }}">Users</a>
+                    </div>
                 </li>
+                {% endif %}
+
+                {% if current_user.is_author %}
+                <!-- author control -->
+                {% endif %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.change_password') }}">Settings</a>
+                </li>
+                {% endif %}
+
+                <!-- login/logout -->
                 {% if current_user.is_anonymous %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
                 </li>
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('main.user', username=current_user.username) }}">Profile</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                 </li>
-                <li class="nav-link">
-                    <a class="nav-link" href="{{ url_for('auth.change_password') }}">Change Password</a>
-                </li>
-                {% if current_user.is_admin %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('admin.users') }}">User Overview</a>
-                </li>
-                {% endif %}
                 {% endif %}
             </ul>
         </div>

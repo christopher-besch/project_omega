@@ -20,10 +20,10 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         # unauthorized?
         if user is None or not user.check_password(form.password.data):
-            flash("Invalid username of password", "error")
+            flash("Invalid username or password", "error")
             return redirect(url_for("auth.login"))
         login_user(user, remember=form.remember_me.data)
-        flash(f"Now logged in as {current_user.username}.", "warning")
+        flash(f"Now logged in as {current_user.username}.", "info")
         # get next page
         next_page = request.args.get("next")
         # check if malisouse redirect to other website
