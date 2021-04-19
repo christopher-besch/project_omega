@@ -49,4 +49,4 @@ def change_password():
         db.session.commit()
         flash(f"Your password has been changed.", "info")
         return redirect(url_for("auth.logout"))
-    return render_template("change_password.html", form=form, title="Change Password")
+    return render_template("settings.html", form=form, title="Change Password")

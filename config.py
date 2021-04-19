@@ -7,6 +7,9 @@ load_dotenv(os.path.join(basedir, ".env"))
 
 
 class Config(object):
+    # application settings
+    USERS_PER_PAGE = 3
+
     SECRET_KEY = os.environ.get("SECRET_KEY")
 
     # database settings

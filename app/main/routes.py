@@ -11,6 +11,11 @@ def index():
     return render_template("index.html", title="Home", canonical_url=url_for("main.index", _external=True))
 
 
+@bp.route("/articles")
+def articles():
+    return render_template("article_overview.html", title="Article Overview")
+
+
 @bp.route("/marca")
 def marca():
     # smul

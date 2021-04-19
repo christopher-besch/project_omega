@@ -37,6 +37,10 @@
 
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.articles') }}">Articles</a>
+                </li>
+
                 {% if not current_user.is_anonymous %}
                 {% if current_user.is_admin %}
                 <!-- admin controls -->
@@ -47,12 +51,21 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbar-admin-dropdown">
                         <a class="dropdown-item" href="{{ url_for('admin.users') }}">Users</a>
+                        <a class="dropdown-item" href="{{ url_for('admin.create_user') }}">Create User</a>
                     </div>
                 </li>
                 {% endif %}
 
                 {% if current_user.is_author %}
                 <!-- author control -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbar-admin-dropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Author
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbar-admin-dropdown">
+                    </div>
+                </li>
                 {% endif %}
 
                 <li class="nav-item">

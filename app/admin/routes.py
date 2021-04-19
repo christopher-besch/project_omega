@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import render_template, flash, redirect, url_for, request, abort
+from flask import render_template, flash, redirect, url_for, request, abort,  current_app
 from flask.json import jsonify
 from flask_login import current_user
 from flask_login.utils import login_required
@@ -18,12 +18,27 @@ def admin_required() -> None:
 
 
 # includes user creation form
-@bp.route("/users", methods=["GET", "POST"])
+@bp.route("/users")
 @login_required
 def users():
     admin_required()
+    page = request.args.get("page", 1, type=int)
+    users = User.query.order_by(User.is_admin.desc(), User.is_author.desc(), User.last_seen.desc()).paginate(
+        page, current_app.config["USERS_PER_PAGE"], False)
+    # None or pagination links
+    prev_url = url_for(
+        "admin.users", page=users.prev_num) if users.has_prev else None
+    next_url = url_for(
+        "admin.users", page=users.next_num) if users.has_next else None
+    return render_template("users.html", users=users.items, prev_url=prev_url, next_url=next_url, amount_pages=users.pages, title="User Overview")
+
+
+# includes user creation form
+@bp.route("/create_user", methods=["GET", "POST"])
+@login_required
+def create_user():
+    admin_required()
     form = CreateUserForm()
-    users = User.query.all()
     if form.validate_on_submit():
         user = User(username=form.username.data,
                     email=form.email.data)
@@ -32,7 +47,7 @@ def users():
         db.session.commit()
         flash(f"{form.username.data} has been created.", "info")
         return redirect(url_for("admin.users"))
-    return render_template("users.html", users=users, form=form, title="User Overview")
+    return render_template("create_user.html", form=form, title="Create User")
 
 
 @login_required

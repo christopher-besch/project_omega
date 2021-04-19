@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>User Overview</h3>
+<h1>User Overview</h1>
 <table class="table">
     <thead>
         <tr>
@@ -81,40 +81,18 @@
         {% endfor %}
     </tbody>
 </table>
-
-<h3>Create New User</h3>
-<form action="" method="post">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.username.label }}<br>
-        {{ form.username(size=32) }}<br>
-        {% for error in form.username.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(size=32) }}<br>
-        {% for error in form.email.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}<br>
-        {% for error in form.password.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password2.label }}<br>
-        {{ form.password2(size=32) }}<br>
-        {% for error in form.password2.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
+<nav aria-label="Users Pagination">
+    <ul class="pagination">
+        <li class="page-item {% if not prev_url %}disabled{% endif %}"><a class="page-link"
+                href="{{ url_for('admin.users', page=1) }}">1</a></li>
+        <li class="page-item {% if not prev_url %}disabled{% endif %}"><a class="page-link"
+                href="{{ prev_url }}">Previous</a></li>
+        <li class="page-item {% if not next_url %}disabled{% endif %}"><a class="page-link"
+                href="{{ next_url }}">Next</a></li>
+        <li class="page-item {% if not next_url %}disabled{% endif %}"><a class="page-link"
+                href="{{ url_for('admin.users', page=amount_pages) }}">{{ amount_pages }}</a></li>
+    </ul>
+</nav>
 {% endblock %}
 
 {% block scripts %}
