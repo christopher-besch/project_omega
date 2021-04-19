@@ -41,6 +41,7 @@ class User(UserMixin, db.Model):
 
     # role flags
     is_admin = db.Column(db.Boolean, default=False)
+    is_author = db.Column(db.Boolean, default=False)
 
     # many articles
     articles = db.relationship(
@@ -51,6 +52,9 @@ class User(UserMixin, db.Model):
 
     def change_admin_status(self, status: bool) -> None:
         self.is_admin = status
+
+    def change_author_status(self, status: bool) -> None:
+        self.is_author = status
 
     # passwords
     def set_password(self, password: str) -> None:

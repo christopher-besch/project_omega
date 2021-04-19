@@ -7,7 +7,8 @@ from flask_login.utils import login_required
 from app import db
 from app import admin
 from app.admin import bp
-from app.admin.forms import ChangePasswordForm, CreateUserForm
+from app.admin.forms import CreateUserForm
+from app.auth.forms import ChangePasswordForm
 from app.models import User
 
 
@@ -56,10 +57,26 @@ def set_admin():
     # todo: type might not be correct <- bad trust in client
     username: str = request.json["username"]
     status: bool = request.json["status"]
-    print(f"{username} to {status}")
     user = User.query.filter_by(username=username).first()
     if user:
         user.change_admin_status(status)
+        db.session.commit()
+        return jsonify({"success": True})
+    return jsonify({"success": False})
+
+
+# ajax
+@bp.route("/set_author", methods=["POST"])
+@login_required
+def set_author():
+    admin_required()
+    # todo: type might not be correct <- bad trust in client
+    username: str = request.json["username"]
+    status: bool = request.json["status"]
+    print(status)
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.change_author_status(status)
         db.session.commit()
         return jsonify({"success": True})
     return jsonify({"success": False})

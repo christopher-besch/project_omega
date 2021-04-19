@@ -1,11 +1,13 @@
 declare var moment: any;
 
+//////////
+// ajax //
+//////////
+
 // represent one endpoint the client can talk to
-class AjaxAddress {
-    private name;
+export class AjaxAddress {
     private url: string;
     constructor(name: string) {
-        this.name = name;
         // load urls from html
         let obj = document.getElementById(name) as HTMLElement;
         this.url = obj.getAttribute("url") as string;
@@ -33,13 +35,17 @@ export function get_ajax_urls(names: string[]): { [name: string]: AjaxAddress } 
     return ajax_urls;
 }
 
+////////////////////
+// button control //
+////////////////////
+
 // add click listener to buttons of <button_class>
 export function add_button_listener(
-    button_class: string,
+    class_name: string,
     callback: { (button: HTMLButtonElement): void }
 ): void {
     let buttons = document.getElementsByClassName(
-        button_class
+        class_name
     ) as HTMLCollectionOf<HTMLButtonElement>;
 
     for (let button of buttons)
@@ -63,6 +69,48 @@ export function set_load_status(element: HTMLElement, loading: boolean, text = "
     text_element[0].innerText = text;
 }
 
+// icon resembling state of toggle button
+export function set_logo(class_name: string, username: string, status: boolean): void {
+    let logos = document.getElementsByClassName(class_name) as HTMLCollectionOf<HTMLElement>;
+    for (let logo of logos)
+        if (logo.dataset.username === username)
+            logo.style.display = status ? "inline-block" : "none";
+}
+
+// button with two statuses
+export function toggle_button(
+    ajax_address: AjaxAddress,
+    true_text: string,
+    false_text: string,
+    logo_class_name: string,
+    button: HTMLButtonElement
+): void {
+    let current_status = JSON.parse(button.dataset.status as string);
+    let msg = {
+        username: button.dataset.username as string,
+        // new status
+        status: !current_status,
+    };
+    // send ajax
+    ajax_address.send(msg, (response, success) => {
+        // status got changed?
+        if (success && response.success === true) {
+            // button text
+            set_load_status(button, false, msg.status ? true_text : false_text);
+            // button status
+            button.dataset.status = JSON.stringify(msg.status);
+            // e.g. is-admin logo
+            set_logo(logo_class_name, msg.username, msg.status);
+        } else set_load_status(button, false, "Failure");
+    });
+    set_load_status(button, true);
+}
+
+//////////////////
+// time control //
+//////////////////
+
+// load time stamps and convert into human readable format
 export function add_moments(): void {
     let moment_divs = document.getElementsByClassName(
         "moment-from-now"

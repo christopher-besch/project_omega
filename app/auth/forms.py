@@ -4,6 +4,30 @@ from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from app.models import User
 
 
+def validate_username(username: str) -> None:
+    user = User.query.filter_by(username=username.data).first()
+    if user is not None:
+        raise ValidationError("Please us a different username.")
+    # any disallowed characters used?
+    disallowed_characters = set()
+    for char in username.data:
+        if not ord("a") <= ord(char) <= ord("z") and \
+                not ord("A") <= ord(char) <= ord("Z") and \
+                not char == "_":
+            quote = "'" if char != "'" else '"'
+            disallowed_characters.add(f"{quote}{char}{quote}")
+    if len(disallowed_characters) != 0:
+        disallowed_characters_str = ", ".join(disallowed_characters)
+        raise ValidationError(
+            f"Only lower, upper case latin letters and underscores are supported for username; these are not allowed: {disallowed_characters_str}")
+
+
+def validate_email(email: str) -> None:
+    user = User.query.filter_by(email=email.data).first()
+    if user is not None:
+        raise ValidationError("Please use a different email address.")
+
+
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
@@ -21,25 +45,21 @@ class RegistrationForm(FlaskForm):
 
     # automatically used by wtforms
     # username already taken?
-    def validate_username(self, username) -> None:
-        user = User.query.filter_by(username=username.data).first()
-        if user is not None:
-            raise ValidationError("Please us a different username.")
-        # any disallowed characters used?
-        disallowed_characters = set()
-        for char in username.data:
-            if not ord("a") <= ord(char) <= ord("z") and \
-               not ord("A") <= ord(char) <= ord("Z") and \
-               not char == "_":
-                quote = "'" if char != "'" else '"'
-                disallowed_characters.add(f"{quote}{char}{quote}")
-        if len(disallowed_characters) != 0:
-            disallowed_characters_str = ", ".join(disallowed_characters)
-            raise ValidationError(
-                f"Only lower, upper case latin letters and underscores are supported for username; these are not allowed: {disallowed_characters_str}")
+    def validate_username(self, username: str) -> None:
+        validate_username(username)
 
     # email already taken?
     def validate_email(self, email) -> None:
-        user = User.query.filter_by(email=email.data).first()
-        if user is not None:
-            raise ValidationError("Please use a different email address.")
+        validate_email(email)
+
+
+class ChangePasswordForm(FlaskForm):
+    password = PasswordField("Password", validators=[DataRequired()])
+    password2 = PasswordField("Password", validators=[
+                              DataRequired(), EqualTo("password")])
+    submit = SubmitField("Change Password")
+
+    # automatically used by wtforms
+    # username already taken?
+    def validate_username(self, username: str) -> None:
+        validate_email(username)

@@ -29,7 +29,7 @@
 <body>
     <!-- navbar -->
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="#">Project Omega</a>
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">Project Omega</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"
             aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -51,6 +51,14 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                 </li>
+                <li class="nav-link">
+                    <a class="nav-link" href="{{ url_for('auth.change_password') }}">Change Password</a>
+                </li>
+                {% if current_user.is_admin %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin.users') }}">User Overview</a>
+                </li>
+                {% endif %}
                 {% endif %}
             </ul>
         </div>

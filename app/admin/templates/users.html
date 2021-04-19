@@ -11,6 +11,7 @@
             <th scope="col"></th>
             <th scope="col"></th>
             <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
@@ -20,6 +21,8 @@
                 {{ user.username }}
                 <div class="is-admin {% if not user.is_admin%}default-hidden{% else %}default-inline{% endif %}"
                     data-username="{{ user.username }}">👑</div>
+                <div class="is-author {% if not user.is_author%}default-hidden{% else %}default-inline{% endif %}"
+                    data-username="{{ user.username }}">📕</div>
             </td>
             <td>
                 {{ user.email }}
@@ -35,17 +38,34 @@
                 </button>
             </td>
             <td>
+                {% if not user.is_author %}
+                <!-- ajax -->
+                <button type="button" class="btn btn-warning toggle-author" data-username="{{ user.username }}"
+                    data-status="false">
+                    <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
+                    <div class="button-text default-inline">Make Author</div>
+                </button>
+                {% else %}
+                <!-- ajax -->
+                <button type="button" class="btn btn-warning toggle-author" data-username="{{ user.username }}"
+                    data-status="true">
+                    <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
+                    <div class="button-text default-inline">Revoke Author</div>
+                </button>
+                {% endif %}
+            </td>
+            <td>
                 {% if not user.is_admin %}
                 <!-- ajax -->
                 <button type="button" class="btn btn-warning toggle-admin" data-username="{{ user.username }}"
-                    data-admin-status="false">
+                    data-status="false">
                     <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
                     <div class="button-text default-inline">Make Admin</div>
                 </button>
                 {% else %}
                 <!-- ajax -->
                 <button {% if user==current_user %}disabled{% endif %} type="button"
-                    class="btn btn-warning toggle-admin" data-username="{{ user.username }}" data-admin-status="true">
+                    class="btn btn-warning toggle-admin" data-username="{{ user.username }}" data-status="true">
                     <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
                     <div class="button-text default-inline">Revoke Admin</div>
                 </button>
@@ -99,6 +119,7 @@
 
 {% block scripts %}
 <ajax_url id="set-admin" url="{{ url_for('admin.set_admin') }}" />
+<ajax_url id="set-author" url="{{ url_for('admin.set_author') }}" />
 
 <script type="module" src="{{ url_for('static', filename='js/users.js') }}"></script>
 {% endblock %}

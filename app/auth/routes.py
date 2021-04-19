@@ -5,7 +5,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import db
 from app.auth import bp
-from app.auth.forms import LoginForm, RegistrationForm
+from app.auth.forms import LoginForm, ChangePasswordForm
 from app.models import User
 
 
@@ -36,9 +36,17 @@ def login():
 @bp.route("/logout")
 def logout():
     logout_user()
+    flash("You have been logged out.", "info")
     return redirect(url_for("main.index"))
 
 
+@login_required
 @bp.route("/change_password", methods=["GET", "POST"])
 def change_password():
-    return "Test"
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        current_user.set_password(form.password.data)
+        db.session.commit()
+        flash(f"Your password has been changed.", "info")
+        return redirect(url_for("auth.logout"))
+    return render_template("change_password.html", form=form, title="Change Password")
