@@ -8,7 +8,7 @@ from app.models import User
 @bp.route("/")
 @bp.route("/index")
 def index():
-    return render_template("main/index.html", title="Home", canonical_url=url_for("main.index", _external=True))
+    return render_template("index.html", title="Home", canonical_url=url_for("main.index", _external=True))
 
 
 @bp.route("/user/<username>")
@@ -19,7 +19,7 @@ def user(username):
         {'author': user, 'body': 'Test post #1'},
         {'author': user, 'body': 'Test post #2'}
     ]
-    return render_template("main/user.html", user=user, posts=posts)
+    return render_template("user.html", user=user, posts=posts)
 
 
 @bp.route("/alert/<error_type>")

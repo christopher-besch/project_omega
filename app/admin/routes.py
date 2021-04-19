@@ -31,7 +31,7 @@ def users():
         db.session.commit()
         flash(f"{form.username.data} has been created.", "info")
         return redirect(url_for("admin.users"))
-    return render_template("admin/users.html", users=users, form=form, title="User Overview")
+    return render_template("users.html", users=users, form=form, title="User Overview")
 
 
 @login_required
@@ -45,7 +45,7 @@ def change_password(username: str):
         db.session.commit()
         flash(f"The password of {username} got changed.", "info")
         return redirect(url_for("admin.users"))
-    return render_template("admin/change_password.html", user=user, form=form, title="Change Password")
+    return render_template("change_password.html", user=user, form=form, title="Change Password")
 
 
 # ajax
@@ -71,10 +71,9 @@ def set_admin():
 def delete_user(username):
     admin_required()
     user = User.query.filter_by(username=username).first()
-    if user and user != current_user:
-        return render_template("admin/delete_user.html", user=user, title="Delete User")
-    else:
+    if not user or user == current_user:
         return redirect(url_for("admin.users"))
+    return render_template("delete_user.html", user=user, title="Delete User")
 
 
 # actually deleting an account
