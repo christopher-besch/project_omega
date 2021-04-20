@@ -3,6 +3,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app.main import bp
 from app.models import User
+import markdown
 
 
 @bp.route("/")
@@ -14,6 +15,14 @@ def index():
 @bp.route("/articles")
 def articles():
     return render_template("article_overview.html", title="Article Overview")
+
+
+@bp.route("/article")
+def article():
+    with open("article.md", "r", encoding="utf-8") as file:
+        article_md = file.read()
+    article_html = markdown.markdown(article_md, extensions=["extra"])
+    return render_template("article.html", article=article_html, title="Article")
 
 
 @bp.route("/marca")
