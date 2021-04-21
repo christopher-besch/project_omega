@@ -33,3 +33,39 @@ Morbi in pellentesque enim. Cras lobortis dignissim ultricies. Nullam rhoncus ul
 ## Header 2 ## {#header2}
 
 [Link back to header 1](#header1)
+
+1. test
+2. test
+
+3. test
+
+4. test
+
+alksdjflkj
+
+6. test
+
+# test
+
+## Le Site ## {lang=fr}
+
+<table>
+<tr>
+<td markdown="1">This is *true* markdown text.</td>
+</tr>
+</table>
+~~~~~~~~~~~~~~~~~~~~~
+a one-line code block
+~~~~~~~~~~~~~~~~~~~~~
+
+Apple
+: Pomaceous fruit of plants of the genus Malus in
+the family Rosaceae.
+
+Orange
+: The fruit of an evergreen tree of the genus Citrus.
+That's some text with a footnote.[^1]
+
+[^1]: And that's the footnote.
+
+    That's the second paragraph.

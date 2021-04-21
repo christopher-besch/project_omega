@@ -5,12 +5,12 @@ from app.models import User
 
 
 def validate_username(username: str) -> None:
-    user = User.query.filter_by(username=username.data).first()
+    user = User.query.filter_by(username=username).first()
     if user is not None:
         raise ValidationError("Please us a different username.")
     # any disallowed characters used?
     disallowed_characters = set()
-    for char in username.data:
+    for char in username:
         if not ord("a") <= ord(char) <= ord("z") and \
                 not ord("A") <= ord(char) <= ord("Z") and \
                 not char == "_":
@@ -23,7 +23,7 @@ def validate_username(username: str) -> None:
 
 
 def validate_email(email: str) -> None:
-    user = User.query.filter_by(email=email.data).first()
+    user = User.query.filter_by(email=email).first()
     if user is not None:
         raise ValidationError("Please use a different email address.")
 
@@ -46,11 +46,11 @@ class RegistrationForm(FlaskForm):
     # automatically used by wtforms
     # username already taken?
     def validate_username(self, username: str) -> None:
-        validate_username(username)
+        validate_username(username.data)
 
     # email already taken?
     def validate_email(self, email) -> None:
-        validate_email(email)
+        validate_email(email.data)
 
 
 class ChangePasswordForm(FlaskForm):

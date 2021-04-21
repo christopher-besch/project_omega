@@ -21,6 +21,7 @@
 -   flask_login
 -   flask_wtf
 -   email_validator
+-   psycopg2-binary
 
 ## commands
 

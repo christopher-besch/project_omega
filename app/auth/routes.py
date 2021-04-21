@@ -40,6 +40,7 @@ def logout():
     return redirect(url_for("main.index"))
 
 
+# todo: not finished
 @login_required
 @bp.route("/change_password", methods=["GET", "POST"])
 def change_password():

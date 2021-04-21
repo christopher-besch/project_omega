@@ -9,8 +9,10 @@ load_dotenv(os.path.join(basedir, ".env"))
 class Config(object):
     # application settings
     USERS_PER_PAGE = 3
+    MAX_CONTENT_PATH = 5000000
 
     SECRET_KEY = os.environ.get("SECRET_KEY")
+    LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
 
     # database settings
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
