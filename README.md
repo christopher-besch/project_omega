@@ -22,6 +22,7 @@
 -   flask_wtf
 -   email_validator
 -   psycopg2-binary
+-   markdown
 
 ## commands
 
