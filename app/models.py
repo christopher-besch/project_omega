@@ -70,14 +70,14 @@ class User(UserMixin, db.Model):
 class Article(db.Model):
     __tablename__ = "article"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
     internal_name = db.Column(db.String(64), index=True, unique=True)
+    name = db.Column(db.String(64))
     last_modified = db.Column(db.DateTime, default=datetime.utcnow)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # data
-    source = db.Column(db.String(32000))
-    html = db.Column(db.String(64000))
+    source = db.Column(db.String(1000000))
+    html = db.Column(db.String(1000000))
 
     # many users
     authors = db.relationship(

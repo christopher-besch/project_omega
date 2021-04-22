@@ -1,5 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-test
+
+<h1>Articles</h1>
+{% for article in articles %}
+{{ article.name }}
+{{ article.internal_name }}
+{{ article.source }}
+{{ article.html|safe }}
+{% endfor %}
+<nav aria-label="Articles Pagination">
+    <ul class="pagination">
+        <li class="page-item {% if not prev_url %}disabled{% endif %}"><a class="page-link"
+                href="{{ url_for('admin.users', page=1) }}">1</a></li>
+        <li class="page-item {% if not prev_url %}disabled{% endif %}"><a class="page-link"
+                href="{{ prev_url }}">Previous</a></li>
+        <li class="page-item {% if not next_url %}disabled{% endif %}"><a class="page-link"
+                href="{{ next_url }}">Next</a></li>
+        <li class="page-item {% if not next_url %}disabled{% endif %}"><a class="page-link"
+                href="{{ url_for('admin.users', page=amount_pages) }}">{{ amount_pages }}</a></li>
+    </ul>
+</nav>
+
 {% endblock %}

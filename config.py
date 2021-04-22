@@ -9,6 +9,7 @@ load_dotenv(os.path.join(basedir, ".env"))
 class Config(object):
     # application settings
     USERS_PER_PAGE = 3
+    ARTICLES_PER_PAGE = 3
     MAX_CONTENT_PATH = 5000000
 
     SECRET_KEY = os.environ.get("SECRET_KEY")
