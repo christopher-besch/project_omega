@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import abort
+from flask_login import current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
@@ -71,7 +71,8 @@ class Article(db.Model):
     __tablename__ = "article"
     id = db.Column(db.Integer, primary_key=True)
     internal_name = db.Column(db.String(64), index=True, unique=True)
-    name = db.Column(db.String(64))
+    title = db.Column(db.String(64))
+    sub_title = db.Column(db.String(64))
     last_modified = db.Column(db.DateTime, default=datetime.utcnow)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -93,6 +94,21 @@ class Article(db.Model):
         back_populates="article",
         cascade="all, delete-orphan"
     )
+
+    def get_authors(self) -> str:
+        authors = ""
+        for idx, author in enumerate(self.authors):
+            authors += author.full_name
+            if idx == len(self.authors) - 2:
+                authors += " and "
+            elif idx == len(self.authors) - 1:
+                pass
+            else:
+                authors += ", "
+        return authors
+
+    def allow_access(self) -> bool:
+        return current_user.is_admin or current_user in self.authors
 
     # author control
     def add_authors(self, *authors: "User") -> None:

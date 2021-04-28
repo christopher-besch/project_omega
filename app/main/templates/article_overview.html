@@ -4,11 +4,20 @@
 
 <h1>Articles</h1>
 {% for article in articles %}
-{{ article.name }}
-{{ article.internal_name }}
-{{ article.source }}
-{{ article.html|safe }}
+<div class="card mb-3">
+    <!-- <img src="https://mdbootstrap.com/img/new/slides/041.jpg" class="card-img-top" alt="..." /> -->
+    <div class="card-body">
+        <a href="{{ url_for('main.article', internal_name=article.internal_name) }}">
+            <h5 class="card-title">{{ article.title }}</h5>
+        </a>
+        <p class="card-text">{{ article.subtitle }}</p>
+        <p class="card-text">
+            <small class="text-muted">By {{ article.get_authors() }}</small>
+        </p>
+    </div>
+</div>
 {% endfor %}
+
 <nav aria-label="Articles Pagination">
     <ul class="pagination">
         <li class="page-item {% if not prev_url %}disabled{% endif %}"><a class="page-link"

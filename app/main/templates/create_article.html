@@ -5,10 +5,10 @@
 <form action="" method="post" enctype="multipart/form-data" novalidate>
     {{ form.hidden_tag() }}
     <div class="form-group">
-        <label for="name-form">Name</label>
-        <input type="text" class="form-control {% if form.name.errors|length != 0 %}is-invalid{% endif %}"
-            id="name-form" name="name" required>
-        {% for error in form.name.errors %}
+        <label for="title-form">Title</label>
+        <input type="text" class="form-control {% if form.title.errors|length != 0 %}is-invalid{% endif %}"
+            id="title-form" name="title" required>
+        {% for error in form.title.errors %}
         <div class="invalid-feedback">{{ error }}</div>
         {% endfor %}
     </div>

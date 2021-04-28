@@ -31,12 +31,11 @@ def articles():
     return render_template("article_overview.html", articles=articles.items, prev_url=prev_url, next_url=next_url, amount_pages=articles.pages, title="Article Overview")
 
 
-@bp.route("/article")
-def article():
-    with open("article.md", "r", encoding="utf-8") as file:
-        article_md = file.read()
-    article_html = markdown.markdown(article_md, extensions=["extra"])
-    return render_template("article.html", article=article_html, title="Article")
+@bp.route("/article/<internal_name>")
+def article(internal_name: str):
+    article = Article.query.filter_by(
+        internal_name=internal_name).first_or_404()
+    return render_template("article.html", article=article, tile=article.title)
 
 
 @bp.route("/create_article", methods=["GET", "POST"])
@@ -44,10 +43,11 @@ def create_article():
     author_required()
     form = CreateArticleForm()
     if form.validate_on_submit():
+        source = request.files["source"]
         source = form.source.data.stream.read()
         html = markdown.markdown(source, extensions=["extra"])
         article = Article(internal_name=form.internal_name.data,
-                          name=form.name.data, source=source, html=html)
+                          title=form.title.data, source=source, html=html)
         db.session.add(article)
         db.session.commit()
         return redirect(url_for("main.articles"))
