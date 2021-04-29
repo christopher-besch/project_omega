@@ -141,4 +141,5 @@ cython_debug/
 app.db
 app.sb-journal
 logs/**
+temp_files
 

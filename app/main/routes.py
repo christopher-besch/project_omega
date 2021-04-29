@@ -1,11 +1,12 @@
+import os
 from jinja2.utils import internal_code
+from werkzeug.utils import secure_filename
 from app.main.forms import CreateArticleForm
 from flask import render_template, flash, redirect, url_for, request, current_app, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app.main import bp
-from app.models import Article, User
-import markdown
+from app.models import Article
 
 
 def author_required() -> None:
@@ -43,11 +44,17 @@ def create_article():
     author_required()
     form = CreateArticleForm()
     if form.validate_on_submit():
-        source = request.files["source"]
-        source = form.source.data.stream.read()
-        html = markdown.markdown(source, extensions=["extra"])
+        # temporarily save uploaded file
+        source_file = request.files["source"]
+        filename = secure_filename(source_file.filename)
+        source_file.save(os.path.join(
+            current_app.config["UPLOAD_FOLDER"], filename))
+        source_file.seek(0)
+        # read file and save new article
+        source = str(source_file.read(), "utf-8")
         article = Article(internal_name=form.internal_name.data,
-                          title=form.title.data, source=source, html=html)
+                          title=form.title.data, source=source)
+        article.compile()
         db.session.add(article)
         db.session.commit()
         return redirect(url_for("main.articles"))

@@ -3,6 +3,7 @@ from flask_login import current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
+import markdown
 
 # relationships:
 # user     many-to-many article
@@ -94,6 +95,9 @@ class Article(db.Model):
         back_populates="article",
         cascade="all, delete-orphan"
     )
+
+    def compile(self) -> None:
+        self.html = markdown.markdown(self.source, extensions=["extra"])
 
     def get_authors(self) -> str:
         authors = ""

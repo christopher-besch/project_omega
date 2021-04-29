@@ -75,6 +75,10 @@ def create_app(config_class=Config) -> Flask:
             app.logger.setLevel(logging.INFO)
             app.logger.info("Project Omega startup")
     
+    # create temp folder
+    if not os.path.exists(app.config["UPLOAD_FOLDER"]):
+        os.makedirs(app.config["UPLOAD_FOLDER"])
+    
     # update last seen
     @app.before_request
     def before_request():

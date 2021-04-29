@@ -11,6 +11,7 @@ class Config(object):
     USERS_PER_PAGE = 3
     ARTICLES_PER_PAGE = 3
     MAX_CONTENT_PATH = 5000000
+    UPLOAD_FOLDER = "./temp_files"
 
     SECRET_KEY = os.environ.get("SECRET_KEY")
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
