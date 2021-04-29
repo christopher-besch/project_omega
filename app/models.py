@@ -112,6 +112,7 @@ class Article(db.Model):
         return authors
 
     def allow_access(self) -> bool:
+        # admins and authors of this article are allowed
         return current_user.is_admin or current_user in self.authors
 
     # author control

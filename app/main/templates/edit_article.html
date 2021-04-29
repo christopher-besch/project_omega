@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data" novalidate>
+    {{ form.hidden_tag() }}
+
+    {% with %}
+    {% set name = "title" %}
+    {% set title = "Title" %}
+    {% set form_element = form.title %}
+    {% include "_text_input.html" %}
+    {% endwith %}
+
+    {% with %}
+    {% set name = "internal_name" %}
+    {% set title = "Internal Name" %}
+    {% set form_element = form.internal_name %}
+    {% include "_text_input.html" %}
+    {% endwith %}
+
+    <div class="form-group">
+        <label for="source-form">Upload Source</label>
+        <input type="file" class="form-control-file {% if form.source.errors|length != 0 %}is-invalid{% endif %}"
+            id="source-form" name="source" required>
+        {% for error in form.source.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Article</button>
+</form>
+{% endblock %}

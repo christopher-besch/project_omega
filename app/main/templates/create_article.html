@@ -4,32 +4,21 @@
 <h1>Create Article</h1>
 <form action="" method="post" enctype="multipart/form-data" novalidate>
     {{ form.hidden_tag() }}
-    <div class="form-group">
-        <label for="title-form">Title</label>
-        <input type="text" class="form-control {% if form.title.errors|length != 0 %}is-invalid{% endif %}"
-            id="title-form" name="title" required>
-        {% for error in form.title.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
 
-    <div class="form-group">
-        <label for="internal-name-form">Internal Name</label>
-        <input type="text" class="form-control {% if form.internal_name.errors|length != 0 %}is-invalid{% endif %}"
-            id="internal-name-form" name="internal_name" required>
-        {% for error in form.internal_name.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
+    {% with %}
+    {% set form_element = form.title %}
+    {% include "_text_input.html" %}
+    {% endwith %}
 
-    <div class="form-group">
-        <label for="source-form">Upload Source</label>
-        <input type="file" class="form-control-file {% if form.source.errors|length != 0 %}is-invalid{% endif %}"
-            id="source-form" name="source" required>
-        {% for error in form.source.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
+    {% with %}
+    {% set form_element = form.internal_name %}
+    {% include "_text_input.html" %}
+    {% endwith %}
+
+    {% with %}
+    {% set form_element = form.source %}
+    {% include "_file_input.html" %}
+    {% endwith %}
 
     <button type="submit" class="btn btn-primary">Create Article</button>
 </form>

@@ -14,6 +14,11 @@ def author_required() -> None:
         abort(401)
 
 
+def author_access_required(article: Article) -> None:
+    if not article.allow_access():
+        abort(401)
+
+
 @bp.route("/")
 @bp.route("/index")
 def index():
@@ -36,7 +41,15 @@ def articles():
 def article(internal_name: str):
     article = Article.query.filter_by(
         internal_name=internal_name).first_or_404()
-    return render_template("article.html", article=article, tile=article.title)
+    return render_template("article.html", article=article, title=article.title)
+
+
+@bp.route("/edit_article/<internal_name>")
+def edit_article(internal_name: str):
+    article = Article.query.filter_by(
+        internal_name=internal_name).first_or_404()
+    author_access_required(article)
+    return render_template("edit_article.html", article=article, title=f"Edit {article.title}")
 
 
 @bp.route("/create_article", methods=["GET", "POST"])

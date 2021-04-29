@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h1>{{ article.title }}</h1>
+{% if article.allow_access() %}
+<a href="{{ url_for('main.edit_article', internal_name=article.internal_name) }}">edit this article</a>
+{% endif %}
+<h2>{{ article.subtitle }}</h2>
 {{ article.html|safe }}
 {% endblock %}
