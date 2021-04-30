@@ -2,7 +2,7 @@
 
 {% block content %}
 <h3>User Deletion</h3>
-<p>Are you sure you want to permanently remove <b>{{ user.username }}</b>?</p>
+<p>Are you sure you want to permanently remove <b>{{ user.full_name }}</b> a.k.a. <b>{{ user.username }}</b>?</p>
 <!-- ajax -->
 <button type="button" class="btn btn-danger confirm-delete" data-username="{{ user.username }}"
     data-username="{{ url_for('admin.users') }}" disabled>

@@ -11,6 +11,11 @@
     {% endwith %}
 
     {% with %}
+    {% set form_element = form.full_name %}
+    {% include "_text_input.html" %}
+    {% endwith %}
+
+    {% with %}
     {% set form_element = form.email %}
     {% include "_text_input.html" %}
     {% endwith %}

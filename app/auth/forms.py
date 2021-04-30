@@ -53,13 +53,11 @@ class RegistrationForm(FlaskForm):
         validate_email(email.data)
 
 
-class ChangePasswordForm(FlaskForm):
-    password = PasswordField("Password", validators=[DataRequired()])
-    password2 = PasswordField("Password", validators=[
-                              DataRequired(), EqualTo("password")])
-    submit = SubmitField("Change Password")
+class SettingsForm(FlaskForm):
+    full_name = StringField("Full Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Create New User")
 
-    # automatically used by wtforms
-    # username already taken?
-    def validate_username(self, username: str) -> None:
-        validate_email(username)
+    # email already taken?
+    def validate_email(self, email) -> None:
+        validate_email(email.data)

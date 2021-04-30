@@ -7,6 +7,7 @@ from app.auth.forms import validate_username, validate_email
 
 class CreateUserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
+    full_name = StringField("Full Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     password2 = PasswordField("Password", validators=[

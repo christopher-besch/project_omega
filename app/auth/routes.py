@@ -5,7 +5,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import db
 from app.auth import bp
-from app.auth.forms import LoginForm, ChangePasswordForm
+from app.auth.forms import LoginForm, SettingsForm
 from app.models import User
 
 
@@ -42,12 +42,20 @@ def logout():
 
 # todo: not finished
 @login_required
-@bp.route("/change_password", methods=["GET", "POST"])
-def change_password():
-    form = ChangePasswordForm()
-    if form.validate_on_submit():
-        current_user.set_password(form.password.data)
+@bp.route("/settings", defaults={"username": None}, methods=["GET", "POST"])
+@bp.route("/settings/<username>", methods=["GET", "POST"])
+def settings(username):
+    if not username:
+        user = current_user
+    else:
+        user = User.query.filter_by(username=username).first_or_404()
+    settings_form = SettingsForm()
+    settings_form.full_name.data = user.full_name
+    settings_form.email.data = user.email
+    if settings_form.validate_on_submit():
+        user.full_name = settings_form.full_name.data
+        user.email = settings_form.email.data
         db.session.commit()
-        flash(f"Your password has been changed.", "info")
+        flash(f"Your settings have been changed.", "info")
         return redirect(url_for("auth.logout"))
-    return render_template("settings.html", form=form, title="Change Password")
+    return render_template("settings.html", form=settings_form, title=f"Change Settings of {username}")

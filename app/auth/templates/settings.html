@@ -1,23 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Change Password</h3>
+<h1>Change Settings</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}<br>
-        {% for error in form.password.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password2.label }}<br>
-        {{ form.password2(size=32) }}<br>
-        {% for error in form.password2.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
+
+    {% with %}
+    {% set form_element = form.full_name %}
+    {% include "_text_input.html" %}
+    {% endwith %}
+
+    {% with %}
+    {% set form_element = form.email %}
+    {% include "_text_input.html" %}
+    {% endwith %}
+
+    <button type="submit" class="btn btn-primary">Create User</button>
 </form>
 {% endblock %}

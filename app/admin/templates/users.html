@@ -6,7 +6,7 @@
     <thead>
         <tr>
             <th scope="col">name</th>
-            <th scope="col">email</th>
+            <th scope="col">full_name</th>
             <th scope="col">last seen</th>
             <th scope="col"></th>
             <th scope="col"></th>
@@ -25,7 +25,7 @@
                     data-username="{{ user.username }}">📕</div>
             </td>
             <td>
-                {{ user.email }}
+                {{ user.full_name }}
             </td>
             <td>
                 <div class="moment-from-now" data-time="{{ user.last_seen }}"></div>
@@ -33,8 +33,8 @@
 
             <td>
                 <button {% if user==current_user %}disabled{% endif %} type="button" class="btn btn-primary button-link"
-                    data-url="{{ url_for('admin.change_password', username=user.username) }}">
-                    Change Password
+                    data-url="{{ url_for('auth.settings', username=user.username) }}">
+                    Change Settings
                 </button>
             </td>
             <td>

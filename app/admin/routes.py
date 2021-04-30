@@ -8,7 +8,6 @@ from app import db
 from app import admin
 from app.admin import bp
 from app.admin.forms import CreateUserForm
-from app.auth.forms import ChangePasswordForm
 from app.models import User
 
 
@@ -41,27 +40,14 @@ def create_user():
     form = CreateUserForm()
     if form.validate_on_submit():
         user = User(username=form.username.data,
-                    email=form.email.data)
+                    email=form.email.data,
+                    full_name=form.full_name.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash(f"{form.username.data} has been created.", "info")
         return redirect(url_for("admin.users"))
     return render_template("create_user.html", form=form, title="Create User")
-
-
-@login_required
-@bp.route("/change_password/<username>", methods=["GET", "POST"])
-def change_password(username: str):
-    admin_required()
-    form = ChangePasswordForm()
-    user = User.query.filter_by(username=username).first_or_404()
-    if form.validate_on_submit():
-        user.set_password(form.password.data)
-        db.session.commit()
-        flash(f"The password of {username} got changed.", "info")
-        return redirect(url_for("admin.users"))
-    return render_template("change_password.html", user=user, form=form, title="Change Password")
 
 
 # ajax
