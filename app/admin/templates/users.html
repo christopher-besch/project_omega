@@ -38,38 +38,26 @@
                 </button>
             </td>
             <td>
-                {% if not user.is_author %}
-                <!-- ajax -->
-                <button type="button" class="btn btn-warning toggle-author" data-username="{{ user.username }}"
-                    data-status="false">
-                    <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
-                    <div class="button-text default-inline">Make Author</div>
-                </button>
-                {% else %}
-                <!-- ajax -->
-                <button type="button" class="btn btn-warning toggle-author" data-username="{{ user.username }}"
-                    data-status="true">
-                    <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
-                    <div class="button-text default-inline">Revoke Author</div>
-                </button>
-                {% endif %}
+                {% with %}
+                {% set class="btn-warning toggle-author" %}
+                {% set status=user.is_author %}
+                {% set true_text="Revoke Author" %}
+                {% set false_text="Make Author" %}
+                {% set data={"username":user.username} %}
+                {% include "_toggle_button.html" %}
+                {% endwith %}
             </td>
             <td>
-                {% if not user.is_admin %}
-                <!-- ajax -->
-                <button type="button" class="btn btn-warning toggle-admin" data-username="{{ user.username }}"
-                    data-status="false">
-                    <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
-                    <div class="button-text default-inline">Make Admin</div>
-                </button>
-                {% else %}
-                <!-- ajax -->
-                <button {% if user==current_user %}disabled{% endif %} type="button"
-                    class="btn btn-warning toggle-admin" data-username="{{ user.username }}" data-status="true">
-                    <div class="spinner-border spinner-border-sm on-loads default-hidden"></div>
-                    <div class="button-text default-inline">Revoke Admin</div>
-                </button>
-                {% endif %}
+                {% with %}
+                {% set class="btn-warning toggle-admin" %}
+                {% set status=user.is_admin %}
+                {% set true_text="Revoke Admin" %}
+                {% set false_text="Make Admin" %}
+                {% set data={"username":user.username} %}
+                {# can't revoke one self #}
+                {% set disabled=user == current_user %}
+                {% include "_toggle_button.html" %}
+                {% endwith %}
             </td>
             <td>
                 <button {% if user==current_user %}disabled{% endif %} type="button" class="btn btn-danger button-link"

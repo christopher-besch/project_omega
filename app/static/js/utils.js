@@ -40,33 +40,35 @@ export function add_button_listener(class_name, callback) {
             callback(button);
         });
 }
-// hide or unhide spinner
-export function set_spinner(element, loading, text = "Loading...") {
-    let on_loads = element.getElementsByClassName("on-loads");
+export function set_spinner(button, loading, text = "Loading...") {
+    let on_loads = button.getElementsByClassName("on-loads");
     // hide or unhide spinner
     for (let on_load of on_loads)
         on_load.style.display = loading ? "inline-block" : "none";
     // enable or disable button
     if (loading)
-        element.setAttribute("disabled", "");
+        button.setAttribute("disabled", "");
     else
-        element.removeAttribute("disabled");
+        button.removeAttribute("disabled");
     // update text
-    let text_element = element.getElementsByClassName("button-text");
+    let text_element = button.getElementsByClassName("button-text");
     text_element[0].innerText = text;
 }
 // button with two statuses
-export function toggle_button(button, ajax_address, msg, true_text, false_text, resp_callback) {
+export function toggle_button(button, ajax_address, msg, resp_callback) {
+    // load from html
     let current_status = JSON.parse(button.dataset.status);
+    let true_text = button.dataset.trueText;
+    let false_text = button.dataset.falseText;
     msg.status = !current_status;
     ajax_address.send(msg, (resp, success) => {
         // status got changed?
         if (success && resp.success) {
+            resp_callback(resp);
             // button text
             set_spinner(button, false, resp.status ? true_text : false_text);
             // button status
             button.dataset.status = JSON.stringify(resp.status);
-            resp_callback(resp);
         }
         else
             set_spinner(button, false, "Failure");

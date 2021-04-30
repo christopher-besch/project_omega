@@ -14,13 +14,13 @@ document.body.onload = () => {
     });
     add_button_listener("toggle-admin", (b) => {
         let username = b.dataset.username;
-        toggle_button(b, ajax_urls["set-admin"], { username }, "Revoke Admin", "Make Admin", (resp) => {
+        toggle_button(b, ajax_urls["set-admin"], { username }, (resp) => {
             set_logo("is-admin", username, resp.status);
         });
     });
     add_button_listener("toggle-author", (b) => {
         let username = b.dataset.username;
-        toggle_button(b, ajax_urls["set-author"], { username }, "Revoke Author", "Make Author", (resp) => {
+        toggle_button(b, ajax_urls["set-author"], { username }, (resp) => {
             set_logo("is-author", username, resp.status);
             // for when changing own author status
             if (resp.reload_page)

@@ -54,16 +54,19 @@ export function add_button_listener(
         });
 }
 
-// hide or unhide spinner
-export function set_spinner(element: HTMLElement, loading: boolean, text = "Loading..."): void {
-    let on_loads = element.getElementsByClassName("on-loads") as HTMLCollectionOf<HTMLElement>;
+export function set_spinner(
+    button: HTMLButtonElement,
+    loading: boolean,
+    text = "Loading..."
+): void {
+    let on_loads = button.getElementsByClassName("on-loads") as HTMLCollectionOf<HTMLElement>;
     // hide or unhide spinner
     for (let on_load of on_loads) on_load.style.display = loading ? "inline-block" : "none";
     // enable or disable button
-    if (loading) element.setAttribute("disabled", "");
-    else element.removeAttribute("disabled");
+    if (loading) button.setAttribute("disabled", "");
+    else button.removeAttribute("disabled");
     // update text
-    let text_element = element.getElementsByClassName(
+    let text_element = button.getElementsByClassName(
         "button-text"
     ) as HTMLCollectionOf<HTMLElement>;
     text_element[0].innerText = text;
@@ -74,20 +77,22 @@ export function toggle_button(
     button: HTMLButtonElement,
     ajax_address: AjaxAddress,
     msg: any,
-    true_text: string,
-    false_text: string,
     resp_callback: { (response: any): void }
 ): void {
+    // load from html
     let current_status: boolean = JSON.parse(button.dataset.status as string);
+    let true_text = button.dataset.trueText as string;
+    let false_text = button.dataset.falseText as string;
     msg.status = !current_status;
+
     ajax_address.send(msg, (resp, success) => {
         // status got changed?
         if (success && resp.success) {
+            resp_callback(resp);
             // button text
             set_spinner(button, false, resp.status ? true_text : false_text);
             // button status
             button.dataset.status = JSON.stringify(resp.status);
-            resp_callback(resp);
         } else set_spinner(button, false, "Failure");
     });
     set_spinner(button, true);

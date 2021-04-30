@@ -1,0 +1,10 @@
+{# required parameters: class: str, status: bool, true_text: str, false_text: str, data: Dict[str, str]
+optional parameters: disabled: bool = False, loading: bool = False #}
+<button {% for key, value in data.items() %} data-{{ key }}="{{ value }}" {% endfor %} type="button"
+    class="btn {{ class }}" data-status="{{ status|tojson }}" data-true-text="{{ true_text }}"
+    data-false-text="{{ false_text }}" {% if disabled or loading %}disabled{% endif %}>
+    <div
+        class="spinner-border spinner-border-sm on-loads {% if loading %}default-inline{% else %}default-hidden{% endif %}">
+    </div>
+    <div class="button-text default-inline">{{ true_text if status else false_text }}</div>
+</button>

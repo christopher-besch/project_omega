@@ -17,34 +17,20 @@ document.body.onload = () => {
 
     add_button_listener("toggle-admin", (b) => {
         let username = b.dataset.username as string;
-        toggle_button(
-            b,
-            ajax_urls["set-admin"],
-            { username },
-            "Revoke Admin",
-            "Make Admin",
-            (resp): void => {
-                set_logo("is-admin", username, resp.status);
-            }
-        );
+        toggle_button(b, ajax_urls["set-admin"], { username }, (resp): void => {
+            set_logo("is-admin", username, resp.status);
+        });
     });
     add_button_listener("toggle-author", (b) => {
         let username = b.dataset.username as string;
-        toggle_button(
-            b,
-            ajax_urls["set-author"],
-            { username },
-            "Revoke Author",
-            "Make Author",
-            (resp): void => {
-                set_logo("is-author", username, resp.status);
-                // for when changing own author status
-                if (resp.reload_page)
-                    window.location.replace(
-                        window.location.pathname + window.location.search + window.location.hash
-                    );
-            }
-        );
+        toggle_button(b, ajax_urls["set-author"], { username }, (resp): void => {
+            set_logo("is-author", username, resp.status);
+            // for when changing own author status
+            if (resp.reload_page)
+                window.location.replace(
+                    window.location.pathname + window.location.search + window.location.hash
+                );
+        });
     });
 
     add_moments();
