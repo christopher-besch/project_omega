@@ -1,0 +1,5 @@
+{# required: form_element: BooleanField #}
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" id="{{ form_element.id }}-form" name="{{ form_element.id }}">
+    <label class="form-check-label" for="{{ form_element.id }}">{{ form_element.label.text }}</label>
+</div>

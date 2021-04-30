@@ -11,6 +11,7 @@ def main():
     app_context.push()
 
     username = input("Input admin name: ")
+    full_name = input("Full Name: ")
     email = input("Email: ")
     password = input('password: ')
     password2 = input('repeat password: ')
@@ -18,7 +19,8 @@ def main():
     user = User.query.filter_by(username=username).first()
     if password2 == password and user is None:
         # create user
-        user = User(username=username, email=email, is_admin=True)
+        user = User(username=username, full_name=full_name,
+                    email=email, is_admin=True)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()

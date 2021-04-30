@@ -2,25 +2,24 @@
 
 {% block content %}
 <h1>Sign In</h1>
-<form action="" method="post" novalidate>
+<form action="" method="post">
     {{ form.hidden_tag() }}
-    <p>
-        {{ form.username.label }}<br />
-        {{ form.username(size=32) }}
 
-        {% for error in form.username.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password.label }}<br />
-        {{ form.password(size=32) }}
+    {% with %}
+    {% set form_element = form.username %}
+    {% include "_text_input.html" %}
+    {% endwith %}
 
-        {% for error in form.password.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-    <p>{{ form.submit() }}</p>
+    {% with %}
+    {% set form_element = form.password %}
+    {% include "_password_input.html" %}
+    {% endwith %}
+
+    {% with %}
+    {% set form_element = form.remember_me %}
+    {% include "_boolean_input.html" %}
+    {% endwith %}
+
+    <button type="submit" class="btn btn-primary">Sign In</button>
 </form>
 {% endblock %}

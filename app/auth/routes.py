@@ -1,12 +1,15 @@
 from datetime import datetime
 
-from flask import render_template, flash, redirect, url_for, request, abort
-from flask_login import current_user, login_user, logout_user, login_required
-from werkzeug.urls import url_parse
 from app import db
 from app.auth import bp
-from app.auth.forms import LoginForm, SettingsForm
+from app.auth.forms import LoginForm, SettingsForm, ChangePasswordForm
 from app.models import User
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
+from werkzeug.urls import url_parse
+from app.admin import admin_required
+
+# todo: change to bootstrap
 
 
 @bp.route("/login", methods=["GET", "POST"])
@@ -40,22 +43,39 @@ def logout():
     return redirect(url_for("main.index"))
 
 
-# todo: not finished
 @login_required
 @bp.route("/settings", defaults={"username": None}, methods=["GET", "POST"])
 @bp.route("/settings/<username>", methods=["GET", "POST"])
 def settings(username):
+    # determin right user
     if not username:
         user = current_user
     else:
+        # only admins can change other peoples settings
+        admin_required()
         user = User.query.filter_by(username=username).first_or_404()
-    settings_form = SettingsForm()
-    settings_form.full_name.data = user.full_name
-    settings_form.email.data = user.email
-    if settings_form.validate_on_submit():
+    # get forms
+    settings_form = SettingsForm(user)
+    change_password_form = ChangePasswordForm()
+
+    # load old data if not filled with new
+    # got settings form from client
+    if "full_name" not in request.form:
+        settings_form.full_name.data = user.full_name
+        settings_form.email.data = user.email
+    # got change password form from client
+    elif "password" not in request.form:
+        change_password_form.password.data = ""
+        change_password_form.password2.data = ""
+
+    if "full_name" in request.form and settings_form.validate_on_submit():
         user.full_name = settings_form.full_name.data
         user.email = settings_form.email.data
         db.session.commit()
-        flash(f"Your settings have been changed.", "info")
-        return redirect(url_for("auth.logout"))
-    return render_template("settings.html", form=settings_form, title=f"Change Settings of {username}")
+        flash(f"The changes have been saved.", "info")
+
+    if "password" in request.form and change_password_form.validate_on_submit():
+        user.set_password(change_password_form.password.data)
+        db.session.commit()
+        flash(f"The password has been changed.", "info")
+    return render_template("settings.html", user=user, settings_form=settings_form, change_password_form=change_password_form, title=f"Change Settings of {username}")

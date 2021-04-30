@@ -1,20 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Change Settings</h1>
+{% if user == current_user %}
+<h1>Change Your Settings</h1>
+{% else %}
+<h1>Change Settings of <b>{{ user.username }}</b></h1>
+{% endif %}
 <form action="" method="post">
-    {{ form.hidden_tag() }}
+    {{ settings_form.hidden_tag() }}
 
     {% with %}
-    {% set form_element = form.full_name %}
+    {% set form_element = settings_form.full_name %}
     {% include "_text_input.html" %}
     {% endwith %}
 
     {% with %}
-    {% set form_element = form.email %}
+    {% set form_element = settings_form.email %}
     {% include "_text_input.html" %}
     {% endwith %}
 
-    <button type="submit" class="btn btn-primary">Create User</button>
+    <button type="submit" class="btn btn-primary">Save Settings</button>
+</form>
+
+<form action="" method="post">
+    {{ change_password_form.hidden_tag() }}
+
+    {% with %}
+    {% set form_element = change_password_form.password %}
+    {% include "_password_input.html" %}
+    {% endwith %}
+
+    {% with %}
+    {% set form_element = change_password_form.password2 %}
+    {% include "_password_input.html" %}
+    {% endwith %}
+
+    <button type="submit" class="btn btn-warning">Change Password</button>
 </form>
 {% endblock %}

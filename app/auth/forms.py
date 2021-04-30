@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_login import current_user
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from app.models import User
@@ -35,29 +36,24 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Sign in")
 
 
-class RegistrationForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Email()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    password2 = PasswordField("Password", validators=[
-                              DataRequired(), EqualTo("password")])
-    submit = SubmitField("Register")
-
-    # automatically used by wtforms
-    # username already taken?
-    def validate_username(self, username: str) -> None:
-        validate_username(username.data)
-
-    # email already taken?
-    def validate_email(self, email) -> None:
-        validate_email(email.data)
-
-
 class SettingsForm(FlaskForm):
     full_name = StringField("Full Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired(), Email()])
     submit = SubmitField("Create New User")
 
+    def __init__(self, user: User):
+        super().__init__()
+        self.user = user
+
     # email already taken?
     def validate_email(self, email) -> None:
-        validate_email(email.data)
+        print(self.user)
+        if email.data != self.user.email:
+            validate_email(email.data)
+
+
+class ChangePasswordForm(FlaskForm):
+    password = PasswordField("New Password", validators=[DataRequired()])
+    password2 = PasswordField("Repeat New Password", validators=[
+                              DataRequired(), EqualTo("password")])
+    submit = SubmitField("Create New User")
