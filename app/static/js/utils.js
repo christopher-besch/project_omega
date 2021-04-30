@@ -41,7 +41,7 @@ export function add_button_listener(class_name, callback) {
         });
 }
 // hide or unhide spinner
-export function set_load_status(element, loading, text = "Loading...") {
+export function set_spinner(element, loading, text = "Loading...") {
     let on_loads = element.getElementsByClassName("on-loads");
     // hide or unhide spinner
     for (let on_load of on_loads)
@@ -55,36 +55,23 @@ export function set_load_status(element, loading, text = "Loading...") {
     let text_element = element.getElementsByClassName("button-text");
     text_element[0].innerText = text;
 }
-// icon resembling state of toggle button
-export function set_logo(class_name, username, status) {
-    let logos = document.getElementsByClassName(class_name);
-    for (let logo of logos)
-        if (logo.dataset.username === username)
-            logo.style.display = status ? "inline-block" : "none";
-}
 // button with two statuses
-export function toggle_button(ajax_address, true_text, false_text, logo_class_name, button) {
+export function toggle_button(button, ajax_address, msg, true_text, false_text, resp_callback) {
     let current_status = JSON.parse(button.dataset.status);
-    let msg = {
-        username: button.dataset.username,
-        // new status
-        status: !current_status,
-    };
-    // send ajax
-    ajax_address.send(msg, (response, success) => {
+    msg.status = !current_status;
+    ajax_address.send(msg, (resp, success) => {
         // status got changed?
-        if (success && response.success === true) {
+        if (success && resp.success) {
             // button text
-            set_load_status(button, false, msg.status ? true_text : false_text);
+            set_spinner(button, false, resp.status ? true_text : false_text);
             // button status
-            button.dataset.status = JSON.stringify(msg.status);
-            // e.g. is-admin logo
-            set_logo(logo_class_name, msg.username, msg.status);
+            button.dataset.status = JSON.stringify(resp.status);
+            resp_callback(resp);
         }
         else
-            set_load_status(button, false, "Failure");
+            set_spinner(button, false, "Failure");
     });
-    set_load_status(button, true);
+    set_spinner(button, true);
 }
 //////////////////
 // time control //

@@ -73,10 +73,10 @@ def set_admin():
     username: str = request.json["username"]
     status: bool = request.json["status"]
     user = User.query.filter_by(username=username).first()
-    if user:
+    if user and user != current_user:
         user.change_admin_status(status)
         db.session.commit()
-        return jsonify({"success": True})
+        return jsonify({"success": True, "status": status})
     return jsonify({"success": False})
 
 
@@ -88,12 +88,11 @@ def set_author():
     # todo: type might not be correct <- bad trust in client
     username: str = request.json["username"]
     status: bool = request.json["status"]
-    print(status)
     user = User.query.filter_by(username=username).first()
     if user:
         user.change_author_status(status)
         db.session.commit()
-        return jsonify({"success": True})
+        return jsonify({"success": True, "status": status, "reload_page": user == current_user})
     return jsonify({"success": False})
 
 
@@ -115,7 +114,6 @@ def delete_user(username):
 def confirm_delete():
     admin_required()
     username = request.json["username"]
-    print("deleting " + username)
     # searching for user
     user = User.query.filter_by(username=username).first()
     if user and user != current_user:

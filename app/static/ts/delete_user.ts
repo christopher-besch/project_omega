@@ -1,4 +1,4 @@
-import { get_ajax_urls, add_button_listener, set_load_status } from "./utils.js";
+import { add_button_listener, get_ajax_urls, set_spinner } from "./utils.js";
 
 function delete_user(button: HTMLButtonElement): void {
     console.log("test");
@@ -9,9 +9,9 @@ function delete_user(button: HTMLButtonElement): void {
         // user got deleted?
         if (success && response.success === true) {
             window.location.assign(button.dataset.url as string);
-        } else set_load_status(button, false, "Failure");
+        } else set_spinner(button, false, "Failure");
     });
-    set_load_status(button, true);
+    set_spinner(button, true);
 }
 
 // load urls from html
@@ -25,6 +25,6 @@ document.body.onload = () => {
     ) as HTMLCollectionOf<HTMLButtonElement>;
     for (let button of buttons)
         window.setTimeout(() => {
-            set_load_status(button, false, "Delete User");
+            set_spinner(button, false, "Delete User");
         }, 1000);
 };

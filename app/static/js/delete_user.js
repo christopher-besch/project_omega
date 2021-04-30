@@ -1,4 +1,4 @@
-import { get_ajax_urls, add_button_listener, set_load_status } from "./utils.js";
+import { add_button_listener, get_ajax_urls, set_spinner } from "./utils.js";
 function delete_user(button) {
     console.log("test");
     let msg = {
@@ -10,9 +10,9 @@ function delete_user(button) {
             window.location.assign(button.dataset.url);
         }
         else
-            set_load_status(button, false, "Failure");
+            set_spinner(button, false, "Failure");
     });
-    set_load_status(button, true);
+    set_spinner(button, true);
 }
 // load urls from html
 let ajax_urls = get_ajax_urls(["confirm-delete"]);
@@ -22,7 +22,7 @@ document.body.onload = () => {
     let buttons = document.getElementsByClassName("confirm-delete");
     for (let button of buttons)
         window.setTimeout(() => {
-            set_load_status(button, false, "Delete User");
+            set_spinner(button, false, "Delete User");
         }, 1000);
 };
 //# sourceMappingURL=delete_user.js.map
