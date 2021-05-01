@@ -25,7 +25,7 @@ def users():
         "admin.users", page=users.prev_num) if users.has_prev else None
     next_url = url_for(
         "admin.users", page=users.next_num) if users.has_next else None
-    return render_template("users.html", users=users.items, prev_url=prev_url, next_url=next_url, amount_pages=users.pages, title="User Overview")
+    return render_template("user_overview.html", users=users.items, prev_url=prev_url, next_url=next_url, amount_pages=users.pages, title="User Overview")
 
 
 # includes user creation form
