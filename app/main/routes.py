@@ -100,8 +100,10 @@ def edit_article(internal_name: str):
         article.modify()
         db.session.commit()
         flash("The source has been updated.", "info")
+
     page = request.args.get("page", 1, type=int)
     # get all authors
+    # todo: show authors of this article first
     users = User.query.filter_by(is_author=True).order_by(User.last_seen.desc()).paginate(
         page, current_app.config["USERS_PER_PAGE"], False)
     # None or pagination links
@@ -131,6 +133,7 @@ def set_author():
             article.add_authors(user)
         else:
             article.rm_author(user)
+        article.modify()
         db.session.commit()
         return jsonify({"success": True, "status": status})
     return jsonify({"success": False})

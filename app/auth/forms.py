@@ -21,7 +21,6 @@ class SettingsForm(FlaskForm):
 
     # email already taken?
     def validate_email(self, email) -> None:
-        print(self.user)
         if email.data != self.user.email:
             validate_email(email.data)
 
