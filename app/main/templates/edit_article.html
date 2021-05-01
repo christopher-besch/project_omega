@@ -61,8 +61,8 @@
                 {% set true_text="Revoke Author" %}
                 {% set false_text="Make Author" %}
                 {% set data={"username": user.username, "internal_name": article.internal_name} %}
-                {# can't revoke one self #}
-                {% set disabled=user == current_user %}
+                {# can't revoke one self, but can give #}
+                {% set disabled=user == current_user and article.is_author(current_user) %}
                 {% include "_toggle_button.html" %}
                 {% endwith %}
             </td>
