@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from flask_login import current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -96,6 +96,9 @@ class Article(db.Model):
         cascade="all, delete-orphan"
     )
 
+    def modify(self) -> None:
+        self.last_modified = datetime.utcnow()
+
     def compile(self) -> None:
         self.html = markdown.markdown(self.source, extensions=["extra"])
 
@@ -113,7 +116,7 @@ class Article(db.Model):
 
     def allow_access(self) -> bool:
         # admins and authors of this article are allowed
-        return current_user.is_admin or current_user in self.authors
+        return current_user.is_authenticated and (current_user.is_admin or self.is_author(current_user))
 
     # author control
     def add_authors(self, *authors: "User") -> None:
@@ -142,7 +145,7 @@ class Article(db.Model):
         return citation in self.citations
 
     def __repr__(self):
-        return f"<Article {self.name}>"
+        return f"<Article {self.internal_name}>"
 
 
 # represent edge between a single article and source

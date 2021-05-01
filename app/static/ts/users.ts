@@ -1,4 +1,10 @@
-import { add_button_listener, add_moments, get_ajax_urls, toggle_button } from "./utils.js";
+import {
+    add_button_links,
+    add_button_listener,
+    add_moments,
+    get_ajax_urls,
+    toggle_button,
+} from "./utils.js";
 
 // icon resembling state of toggle button
 export function set_logo(class_name: string, username: string, status: boolean): void {
@@ -10,10 +16,7 @@ export function set_logo(class_name: string, username: string, status: boolean):
 
 let ajax_urls = get_ajax_urls(["set-admin", "set-author"]);
 document.body.onload = () => {
-    // like anchor with href
-    add_button_listener("button-link", (b) => {
-        window.location.assign(b.dataset.url as string);
-    });
+    add_button_links();
 
     add_button_listener("toggle-admin", (b) => {
         let username = b.dataset.username as string;

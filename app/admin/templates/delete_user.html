@@ -5,18 +5,15 @@
 <p>Are you sure you want to permanently remove <b>{{ user.full_name }}</b> a.k.a. <b>{{ user.username }}</b>?</p>
 
 {% with %}
-{% set class="btn-danger confirm-delete" %}
-{% set status=true %}
-{% set true_text="Loading..." %}
-{% set false_text="Loading..." %}
-{% set data={"username":user.username, "url": url_for('admin.users')} %}
-{% set loading=True %}
-{% include "_toggle_button.html" %}
+{% set id=user.username %}
+{% set url=url_for('admin.users') %}
+{% set text="Delete User" %}
+{% include "_confirm_delete_button.html" %}
 {% endwith %}
 {% endblock %}
 
 {% block scripts %}
-<ajax_url id="confirm-delete" url="{{ url_for('admin.confirm_delete') }}" />
+<ajax_url id="confirm-delete" url="{{ url_for('admin.confirm_delete_user') }}" />
 
-<script type="module" src="{{ url_for('static', filename='js/delete_user.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
 {% endblock %}

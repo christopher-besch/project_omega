@@ -8,7 +8,7 @@ export class AjaxAddress {
         let obj = document.getElementById(name);
         this.url = obj.getAttribute("url");
     }
-    send(msg, callback) {
+    send(msg, callback, async = true) {
         let request = new XMLHttpRequest();
         // set callback
         request.onreadystatechange = function () {
@@ -17,7 +17,7 @@ export class AjaxAddress {
                 callback(JSON.parse(request.responseText), request.status === 200);
         };
         // send request
-        request.open("POST", this.url, true);
+        request.open("POST", this.url, async);
         request.setRequestHeader("Content-Type", "application/json");
         request.send(JSON.stringify(msg));
     }
@@ -74,6 +74,12 @@ export function toggle_button(button, ajax_address, msg, resp_callback) {
             set_spinner(button, false, "Failure");
     });
     set_spinner(button, true);
+}
+// like anchor with href
+export function add_button_links() {
+    add_button_listener("button-link", (b) => {
+        window.location.assign(b.dataset.url);
+    });
 }
 //////////////////
 // time control //

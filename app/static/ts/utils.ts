@@ -13,7 +13,7 @@ export class AjaxAddress {
         this.url = obj.getAttribute("url") as string;
     }
 
-    send(msg: any, callback: { (response: any, success: boolean): void }): void {
+    send(msg: any, callback: { (response: any, success: boolean): void }, async = true): void {
         let request = new XMLHttpRequest();
         // set callback
         request.onreadystatechange = function () {
@@ -22,7 +22,7 @@ export class AjaxAddress {
                 callback(JSON.parse(request.responseText), request.status === 200);
         };
         // send request
-        request.open("POST", this.url, true);
+        request.open("POST", this.url, async);
         request.setRequestHeader("Content-Type", "application/json");
         request.send(JSON.stringify(msg));
     }
@@ -98,6 +98,13 @@ export function toggle_button(
     set_spinner(button, true);
 }
 
+// like anchor with href
+export function add_button_links(): void {
+    add_button_listener("button-link", (b) => {
+        window.location.assign(b.dataset.url as string);
+    });
+}
+
 //////////////////
 // time control //
 //////////////////
@@ -106,7 +113,7 @@ export function toggle_button(
 export function add_moments(): void {
     let moment_divs = document.getElementsByClassName(
         "moment-from-now"
-    ) as HTMLCollectionOf<HTMLDivElement>;
+    ) as HTMLCollectionOf<HTMLElement>;
     for (let moment_div of moment_divs) {
         let this_moment = moment.utc(moment_div.dataset.time as string, "YYYY-MM-DD HH:mm:ss.SSS");
         moment_div.innerText = this_moment.fromNow();

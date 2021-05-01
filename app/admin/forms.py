@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from app.models import User
 from app.validators import validate_username, validate_email
@@ -12,7 +12,6 @@ class CreateUserForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
     password2 = PasswordField("Password", validators=[
                               DataRequired(), EqualTo("password")])
-    submit = SubmitField("Create New User")
 
     # automatically used by wtforms
     # username already taken?

@@ -2,9 +2,11 @@
 
 {% block content %}
 <h1>{{ article.title }}</h1>
+<h2>{{ article.subtitle }}</h2>
+<i>By {{ article.get_authors() }}</i><br />
 {% if article.allow_access() %}
 <a href="{{ url_for('main.edit_article', internal_name=article.internal_name) }}">edit this article</a>
 {% endif %}
-<h2>{{ article.subtitle }}</h2>
+<hr>
 {{ article.html|safe }}
 {% endblock %}

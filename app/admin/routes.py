@@ -81,7 +81,7 @@ def set_author():
 # delete user
 @bp.route('/delete_user/<username>')
 @login_required
-def delete_user(username):
+def delete_user(username: str):
     admin_required()
     user = User.query.filter_by(username=username).first()
     if not user or user == current_user:
@@ -91,11 +91,11 @@ def delete_user(username):
 
 # actually deleting an account
 # ajax
-@bp.route('/confirm_delete', methods=['POST'])
+@bp.route('/confirm_delete_user', methods=['POST'])
 @login_required
-def confirm_delete():
+def confirm_delete_user():
     admin_required()
-    username = request.json["username"]
+    username = request.json["id"]
     # searching for user
     user = User.query.filter_by(username=username).first()
     if user and user != current_user:

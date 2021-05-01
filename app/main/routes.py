@@ -3,9 +3,11 @@ import os
 from app import db
 from app.auth.access import author_required, edit_access_required
 from app.main import bp
-from app.main.forms import CreateArticleForm
+from app.main.forms import CreateArticleForm, UpdateArticleSourceForm
 from app.models import Article
-from flask import current_app, redirect, render_template, request, url_for
+from flask import (current_app, flash, jsonify, redirect, render_template,
+                   request, url_for)
+from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
 
@@ -27,22 +29,8 @@ def articles():
     return render_template("article_overview.html", articles=articles.items, prev_url=prev_url, next_url=next_url, amount_pages=articles.pages, title="Article Overview")
 
 
-@bp.route("/article/<internal_name>")
-def article(internal_name: str):
-    article = Article.query.filter_by(
-        internal_name=internal_name).first_or_404()
-    return render_template("article.html", article=article, title=article.title)
-
-
-@bp.route("/edit_article/<internal_name>")
-def edit_article(internal_name: str):
-    article = Article.query.filter_by(
-        internal_name=internal_name).first_or_404()
-    edit_access_required(article)
-    return render_template("edit_article.html", article=article, title=f"Edit {article.title}")
-
-
 @bp.route("/create_article", methods=["GET", "POST"])
+@login_required
 def create_article():
     author_required()
     form = CreateArticleForm()
@@ -58,7 +46,67 @@ def create_article():
         article = Article(internal_name=form.internal_name.data,
                           title=form.title.data, source=source)
         article.compile()
+        article.add_authors(current_user)
         db.session.add(article)
         db.session.commit()
         return redirect(url_for("main.articles"))
     return render_template("create_article.html", form=form, title="Create Article")
+
+
+@bp.route("/article/<internal_name>")
+def article(internal_name: str):
+    article = Article.query.filter_by(
+        internal_name=internal_name).first_or_404()
+    return render_template("article.html", article=article, title=article.title)
+
+
+@bp.route("/edit_article/<internal_name>", methods=["GET", "POST"])
+@login_required
+def edit_article(internal_name: str):
+    article = Article.query.filter_by(
+        internal_name=internal_name).first_or_404()
+    edit_access_required(article)
+
+    form = UpdateArticleSourceForm()
+    if form.validate_on_submit():
+        # temporarily save uploaded file
+        source_file = request.files["source"]
+        filename = secure_filename(source_file.filename)
+        source_file.save(os.path.join(
+            current_app.config["UPLOAD_FOLDER"], filename))
+        source_file.seek(0)
+        # read file and save new article
+        source = str(source_file.read(), "utf-8")
+        article.source = source
+        article.compile()
+        db.session.commit()
+    return render_template("edit_article.html", article=article, form=form, title=f"Edit {article.title}")
+
+
+# delete article
+@bp.route('/delete_article/<internal_name>')
+@login_required
+def delete_article(internal_name: str):
+    article = Article.query.filter_by(
+        internal_name=internal_name).first()
+    edit_access_required(article)
+    if not article:
+        return redirect(url_for("main.articles"))
+    return render_template("delete_article.html", article=article, title="Delete Article")
+
+
+# actually deleting an account
+# ajax
+@bp.route('/confirm_delete_article', methods=['POST'])
+@login_required
+def confirm_delete_article():
+    internal_name = request.json["id"]
+    article = Article.query.filter_by(
+        internal_name=internal_name).first()
+    edit_access_required(article)
+    if article:
+        db.session.delete(article)
+        db.session.commit()
+        flash('{} has been deleted!'.format(article.internal_name), "info")
+        return jsonify({'success': True})
+    return jsonify({'success': False})

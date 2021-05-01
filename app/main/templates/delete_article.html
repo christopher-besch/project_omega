@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Article Deletion</h3>
+<p>Are you sure you want to permanently remove <b>{{ article.title }}</b> a.k.a. <b>{{ article.internal_name }}</b>?</p>
+
+{% with %}
+{% set id=article.internal_name %}
+{% set url=url_for('main.articles') %}
+{% set text="Delete Article" %}
+{% include "_confirm_delete_button.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block scripts %}
+<ajax_url id="confirm-delete" url="{{ url_for('main.confirm_delete_article') }}" />
+
+<script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
+{% endblock %}

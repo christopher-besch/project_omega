@@ -73,4 +73,4 @@ def settings(username):
         user.set_password(change_password_form.password.data)
         db.session.commit()
         flash(f"The password has been changed.", "info")
-    return render_template("settings.html", user=user, settings_form=settings_form, change_password_form=change_password_form, title=f"Change Settings of {username}")
+    return render_template("settings.html", user=user, settings_form=settings_form, change_password_form=change_password_form, title=f"Change Settings of {user.username}")

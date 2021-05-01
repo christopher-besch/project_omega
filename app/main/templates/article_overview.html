@@ -12,7 +12,12 @@
         </a>
         <p class="card-text">{{ article.subtitle }}</p>
         <p class="card-text">
-            <small class="text-muted">By {{ article.get_authors() }}</small>
+            <small class="text-muted">
+                By {{ article.get_authors() }}<br />
+                <!-- Created <span class="moment-from-now default-inline" data-time="{{ article.created_on }}"></span><br /> -->
+                Last modified <span class="moment-from-now default-inline"
+                    data-time="{{ article.last_modified }}"></span>
+            </small>
         </p>
     </div>
 </div>
@@ -31,4 +36,8 @@
     </ul>
 </nav>
 
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/article_overview.js') }}"></script>
 {% endblock %}

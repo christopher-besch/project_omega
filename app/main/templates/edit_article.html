@@ -1,32 +1,45 @@
 {% extends "base.html" %}
 
 {% block content %}
+{#
+- title
+- subtitle
+- authors
+- references
+- resources
+- used extras
+- delete
+#}
+
+{# source update #}
 <form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
 
     {% with %}
-    {% set name = "title" %}
-    {% set title = "Title" %}
-    {% set form_element = form.title %}
-    {% include "_text_input.html" %}
+    {% set form_element = form.source %}
+    {% include "_file_input.html" %}
     {% endwith %}
 
-    {% with %}
-    {% set name = "internal_name" %}
-    {% set title = "Internal Name" %}
-    {% set form_element = form.internal_name %}
-    {% include "_text_input.html" %}
-    {% endwith %}
-
-    <div class="form-group">
-        <label for="source-form">Upload Source</label>
-        <input type="file" class="form-control-file {% if form.source.errors|length != 0 %}is-invalid{% endif %}"
-            id="source-form" name="source" required>
-        {% for error in form.source.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create Article</button>
+    <button type="submit" class="btn btn-warning">Update Article</button>
 </form>
+<hr>
+
+{# delete #}
+<button type="button" class="btn btn-danger button-link"
+    data-url="{{ url_for('main.delete_article', internal_name=article.internal_name) }}">
+    Delete Article
+</button>
+<hr>
+
+{# preview #}
+<h1>{{ article.title }}—Preview</h1>
+<h2>{{ article.subtitle }}</h2>
+<i>By {{ article.get_authors() }}</i><br />
+<hr>
+{{ article.html|safe }}
+
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/edit_article.js') }}"></script>
 {% endblock %}
