@@ -1,32 +1,8 @@
-from flask_wtf import FlaskForm
-from flask_login import current_user
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from app.models import User
-
-
-def validate_username(username: str) -> None:
-    user = User.query.filter_by(username=username).first()
-    if user is not None:
-        raise ValidationError("Please us a different username.")
-    # any disallowed characters used?
-    disallowed_characters = set()
-    for char in username:
-        if not ord("a") <= ord(char) <= ord("z") and \
-                not ord("A") <= ord(char) <= ord("Z") and \
-                not char == "_":
-            quote = "'" if char != "'" else '"'
-            disallowed_characters.add(f"{quote}{char}{quote}")
-    if len(disallowed_characters) != 0:
-        disallowed_characters_str = ", ".join(disallowed_characters)
-        raise ValidationError(
-            f"Only lower, upper case latin letters and underscores are supported for username; these are not allowed: {disallowed_characters_str}")
-
-
-def validate_email(email: str) -> None:
-    user = User.query.filter_by(email=email).first()
-    if user is not None:
-        raise ValidationError("Please use a different email address.")
+from app.validators import validate_email
+from flask_wtf import FlaskForm
+from wtforms import BooleanField, PasswordField, StringField, SubmitField
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 
 
 class LoginForm(FlaskForm):
