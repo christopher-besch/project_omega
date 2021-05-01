@@ -10,7 +10,6 @@
 <h1>Edit <a href="{{ url_for('main.article', internal_name=article.internal_name) }}">{{ article.title }}</a></h1>
 <hr>
 
-<h3>Metadata</h3>
 <form action="" method="post">
     {{ metadata_form.hidden_tag() }}
 
@@ -70,12 +69,12 @@
         {% endfor %}
     </tbody>
 </table>
-
 {% with %}
 {% set address="main.edit_article" %}
 {% set address_options={ "internal_name": article.internal_name } %}
 {% include "_pagination_links.html" %}
 {% endwith %}
+<hr>
 
 {# source update #}
 <form action="" method="post" enctype="multipart/form-data">
@@ -88,6 +87,7 @@
 
     <button type="submit" class="btn btn-warning">Update Article</button>
 </form>
+<pre><code>{{ article.source }}</code></pre>
 <hr>
 
 {# delete #}
