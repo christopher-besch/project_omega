@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired
 
 
 class CreateArticleForm(FlaskForm):
-    title = StringField("Name", validators=[DataRequired()])
+    title = StringField("Title", validators=[DataRequired()])
     internal_name = StringField("Internal Name", validators=[DataRequired()])
     source = FileField("Source Upload", validators=[DataRequired()])
 
@@ -18,3 +18,8 @@ class CreateArticleForm(FlaskForm):
 
 class UpdateArticleSourceForm(FlaskForm):
     source = FileField("Source Upload", validators=[DataRequired()])
+
+
+class MetaDataForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    subtitle = StringField("Sub Title")

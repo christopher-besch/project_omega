@@ -49,10 +49,9 @@ def settings(username):
         # only admins can change other peoples settings
         admin_required()
         user = User.query.filter_by(username=username).first_or_404()
-    # get forms
+
     settings_form = SettingsForm(user)
     change_password_form = ChangePasswordForm()
-
     # load old data if not filled with new
     # got settings form from client
     if "full_name" not in request.form:
@@ -63,6 +62,7 @@ def settings(username):
         change_password_form.password.data = ""
         change_password_form.password2.data = ""
 
+    # save changes
     if "full_name" in request.form and settings_form.validate_on_submit():
         user.full_name = settings_form.full_name.data
         user.email = settings_form.email.data

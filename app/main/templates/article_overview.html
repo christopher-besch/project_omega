@@ -10,11 +10,11 @@
         <a href="{{ url_for('main.article', internal_name=article.internal_name) }}">
             <h5 class="card-title">{{ article.title }}</h5>
         </a>
-        <p class="card-text">{{ article.subtitle }}</p>
+        {% if article.subtitle %}<h5 class="card-subtitle">{{ article.subtitle }}</h5>{% endif %}
         <p class="card-text">
             <small class="text-muted">
                 By {{ article.get_authors() }}<br />
-                <!-- Created <span class="moment-from-now default-inline" data-time="{{ article.created_on }}"></span><br /> -->
+                Created <span class="moment-from-now default-inline" data-time="{{ article.created_on }}"></span><br />
                 Last modified <span class="moment-from-now default-inline"
                     data-time="{{ article.last_modified }}"></span>
             </small>

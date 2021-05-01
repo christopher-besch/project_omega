@@ -2,21 +2,36 @@
 
 {% block content %}
 {#
-- title
-- subtitle
 - authors
 - references
 - resources
 - used extras
-- delete
 #}
+
+{# metadata #}
+<form action="" method="post">
+    {{ metadata_form.hidden_tag() }}
+
+    {% with %}
+    {% set form_element = metadata_form.title %}
+    {% include "_text_input.html" %}
+    {% endwith %}
+
+    {% with %}
+    {% set form_element = metadata_form.subtitle %}
+    {% set optional = True %}
+    {% include "_text_input.html" %}
+    {% endwith %}
+
+    <button type="submit" class="btn btn-primary">Update Metadata</button>
+</form>
 
 {# source update #}
 <form action="" method="post" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
+    {{ update_source_form.hidden_tag() }}
 
     {% with %}
-    {% set form_element = form.source %}
+    {% set form_element = update_source_form.source %}
     {% include "_file_input.html" %}
     {% endwith %}
 
@@ -33,7 +48,7 @@
 
 {# preview #}
 <h1>{{ article.title }}—Preview</h1>
-<h2>{{ article.subtitle }}</h2>
+{% if article.subtitle %}<h3>{{ article.subtitle }}</h3>{% endif %}
 <i>By {{ article.get_authors() }}</i><br />
 <hr>
 {{ article.html|safe }}

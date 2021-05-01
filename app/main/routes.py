@@ -1,9 +1,12 @@
 import os
+import re
+
+from wtforms import meta
 
 from app import db
 from app.auth.access import author_required, edit_access_required
 from app.main import bp
-from app.main.forms import CreateArticleForm, UpdateArticleSourceForm
+from app.main.forms import CreateArticleForm, MetaDataForm, UpdateArticleSourceForm
 from app.models import Article
 from flask import (current_app, flash, jsonify, redirect, render_template,
                    request, url_for)
@@ -67,8 +70,23 @@ def edit_article(internal_name: str):
         internal_name=internal_name).first_or_404()
     edit_access_required(article)
 
-    form = UpdateArticleSourceForm()
-    if form.validate_on_submit():
+    update_source_form = UpdateArticleSourceForm()
+    metadata_form = MetaDataForm()
+    # load old data if not filled with new
+    # got metadata form
+    if "title" not in request.form:
+        metadata_form.title.data = article.title
+        metadata_form.subtitle.data = article.subtitle
+
+    # save changes
+    if "title" in request.form:
+        article.title = metadata_form.title.data
+        article.subtitle = metadata_form.subtitle.data
+        article.modify()
+        db.session.commit()
+        flash("The metadata has been updated.", "info")
+
+    if "source" in request.files and update_source_form.validate_on_submit():
         # temporarily save uploaded file
         source_file = request.files["source"]
         filename = secure_filename(source_file.filename)
@@ -79,8 +97,10 @@ def edit_article(internal_name: str):
         source = str(source_file.read(), "utf-8")
         article.source = source
         article.compile()
+        article.modify()
         db.session.commit()
-    return render_template("edit_article.html", article=article, form=form, title=f"Edit {article.title}")
+        flash("The source has been updated.", "info")
+    return render_template("edit_article.html", article=article, metadata_form=metadata_form, update_source_form=update_source_form, title=f"Edit {article.title}")
 
 
 # delete article

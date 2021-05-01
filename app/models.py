@@ -73,7 +73,7 @@ class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     internal_name = db.Column(db.String(64), index=True, unique=True)
     title = db.Column(db.String(64))
-    sub_title = db.Column(db.String(64))
+    subtitle = db.Column(db.String(64))
     last_modified = db.Column(db.DateTime, default=datetime.utcnow)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
 
