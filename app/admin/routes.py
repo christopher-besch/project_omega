@@ -1,19 +1,15 @@
 from datetime import datetime
 
-from flask import render_template, flash, redirect, url_for, request, abort,  current_app
+from app import db
+from app.admin import bp
+from app.admin.forms import CreateUserForm
+from app.auth.access import admin_required
+from app.models import User
+from flask import (current_app, flash, redirect, render_template, request,
+                   url_for)
 from flask.json import jsonify
 from flask_login import current_user
 from flask_login.utils import login_required
-from app import db
-from app import admin
-from app.admin import bp
-from app.admin.forms import CreateUserForm
-from app.models import User
-
-
-def admin_required() -> None:
-    if not current_user.is_admin:
-        abort(401)
 
 
 # includes user creation form

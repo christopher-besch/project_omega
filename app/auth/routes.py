@@ -1,15 +1,11 @@
-from datetime import datetime
-
 from app import db
+from app.admin import admin_required
 from app.auth import bp
-from app.auth.forms import LoginForm, SettingsForm, ChangePasswordForm
+from app.auth.forms import ChangePasswordForm, LoginForm, SettingsForm
 from app.models import User
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.urls import url_parse
-from app.admin import admin_required
-
-# todo: change to bootstrap
 
 
 @bp.route("/login", methods=["GET", "POST"])
@@ -18,7 +14,6 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     form = LoginForm()
-    # trying to log in?
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         # unauthorized?
@@ -29,7 +24,7 @@ def login():
         flash(f"Now logged in as {current_user.username}.", "info")
         # get next page
         next_page = request.args.get("next")
-        # check if malisouse redirect to other website
+        # check if malicious redirect to other website
         if not next_page or url_parse(next_page).netloc != "":
             next_page = url_for("main.index")
         return redirect(next_page)

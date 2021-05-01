@@ -16,6 +16,7 @@ migrate = Migrate()
 login = LoginManager()
 login.login_view = "auth.login"
 login.login_message = "You need to be logged in to access this page."
+login.login_message_category = "warning"
 
 def create_app(config_class=Config) -> Flask:
     app = Flask(__name__)

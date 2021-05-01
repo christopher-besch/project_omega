@@ -1,22 +1,12 @@
 import os
-from jinja2.utils import internal_code
-from werkzeug.utils import secure_filename
-from app.main.forms import CreateArticleForm
-from flask import render_template, flash, redirect, url_for, request, current_app, abort
-from flask_login import current_user, login_user, logout_user, login_required
+
 from app import db
+from app.auth.access import author_required, edit_access_required
 from app.main import bp
+from app.main.forms import CreateArticleForm
 from app.models import Article
-
-
-def author_required() -> None:
-    if not current_user.is_author:
-        abort(401)
-
-
-def author_access_required(article: Article) -> None:
-    if not article.allow_access():
-        abort(401)
+from flask import current_app, redirect, render_template, request, url_for
+from werkzeug.utils import secure_filename
 
 
 @bp.route("/")
@@ -48,7 +38,7 @@ def article(internal_name: str):
 def edit_article(internal_name: str):
     article = Article.query.filter_by(
         internal_name=internal_name).first_or_404()
-    author_access_required(article)
+    edit_access_required(article)
     return render_template("edit_article.html", article=article, title=f"Edit {article.title}")
 
 
