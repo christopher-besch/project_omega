@@ -17,7 +17,9 @@ class Config(object):
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
 
     # database settings
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL").replace("postgres://", "postgresql://")
+    # todo: horrible hack
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "DATABASE_URL").replace("postgres://", "postgresql://")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # mail settings
