@@ -1,13 +1,17 @@
-{# required: address: str #}
+{# required: address: str
+optional: address_options: Dict[str, str] #}
+{% if not address_options %}
+{% set address_options={} %}
+{% endif %}
 <nav aria-label="Users Pagination">
     <ul class="pagination">
         <li class="page-item {% if not prev_url %}disabled{% endif %}"><a class="page-link"
-                href="{{ url_for(address, page=1) }}">1</a></li>
+                href="{{ url_for(address, page=1, **address_options) }}">1</a></li>
         <li class="page-item {% if not prev_url %}disabled{% endif %}"><a class="page-link"
                 href="{{ prev_url }}">Previous</a></li>
         <li class="page-item {% if not next_url %}disabled{% endif %}"><a class="page-link"
                 href="{{ next_url }}">Next</a></li>
         <li class="page-item {% if not next_url %}disabled{% endif %}"><a class="page-link"
-                href="{{ url_for(address, page=amount_pages) }}">{{ amount_pages }}</a></li>
+                href="{{ url_for(address, page=amount_pages, **address_options) }}">{{ amount_pages }}</a></li>
     </ul>
 </nav>

@@ -7,7 +7,7 @@ from app import db
 from app.auth.access import author_required, edit_access_required
 from app.main import bp
 from app.main.forms import CreateArticleForm, MetaDataForm, UpdateArticleSourceForm
-from app.models import Article
+from app.models import Article, User
 from flask import (current_app, flash, jsonify, redirect, render_template,
                    request, url_for)
 from flask_login import current_user, login_required
@@ -32,6 +32,13 @@ def articles():
     return render_template("article_overview.html", articles=articles.items, prev_url=prev_url, next_url=next_url, amount_pages=articles.pages, title="Article Overview")
 
 
+@bp.route("/article/<internal_name>")
+def article(internal_name: str):
+    article = Article.query.filter_by(
+        internal_name=internal_name).first_or_404()
+    return render_template("article.html", article=article, title=article.title)
+
+
 @bp.route("/create_article", methods=["GET", "POST"])
 @login_required
 def create_article():
@@ -54,13 +61,6 @@ def create_article():
         db.session.commit()
         return redirect(url_for("main.articles"))
     return render_template("create_article.html", form=form, title="Create Article")
-
-
-@bp.route("/article/<internal_name>")
-def article(internal_name: str):
-    article = Article.query.filter_by(
-        internal_name=internal_name).first_or_404()
-    return render_template("article.html", article=article, title=article.title)
 
 
 @bp.route("/edit_article/<internal_name>", methods=["GET", "POST"])
@@ -100,7 +100,40 @@ def edit_article(internal_name: str):
         article.modify()
         db.session.commit()
         flash("The source has been updated.", "info")
-    return render_template("edit_article.html", article=article, metadata_form=metadata_form, update_source_form=update_source_form, title=f"Edit {article.title}")
+    page = request.args.get("page", 1, type=int)
+    # get all authors
+    users = User.query.filter_by(is_author=True).order_by(User.last_seen.desc()).paginate(
+        page, current_app.config["USERS_PER_PAGE"], False)
+    # None or pagination links
+    prev_url = url_for(
+        "main.edit_article", internal_name=internal_name, page=users.prev_num) if users.has_prev else None
+    next_url = url_for(
+        "main.edit_article", internal_name=internal_name, page=users.next_num) if users.has_next else None
+    return render_template("edit_article.html",
+                           article=article, users=users.items, metadata_form=metadata_form, update_source_form=update_source_form,
+                           prev_url=prev_url, next_url=next_url, amount_pages=users.pages,
+                           title=f"Edit {article.title}")
+
+
+# add or remove this user as author from this article
+@bp.route("/set_author", methods=["POST"])
+@login_required
+def set_author():
+    internal_name: str = request.json["internal_name"]
+    username: str = request.json["username"]
+    status: bool = request.json["status"]
+    article = Article.query.filter_by(
+        internal_name=internal_name).first()
+    user = User.query.filter_by(username=username).first()
+    edit_access_required(article)
+    if article and user:
+        if status:
+            article.add_authors(user)
+        else:
+            article.rm_author(user)
+        db.session.commit()
+        return jsonify({"success": True, "status": status})
+    return jsonify({"success": False})
 
 
 # delete article
@@ -117,7 +150,7 @@ def delete_article(internal_name: str):
 
 # actually deleting an account
 # ajax
-@bp.route('/confirm_delete_article', methods=['POST'])
+@bp.route("/confirm_delete_article", methods=["POST"])
 @login_required
 def confirm_delete_article():
     internal_name = request.json["id"]

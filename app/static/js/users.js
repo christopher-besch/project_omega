@@ -1,11 +1,4 @@
-import { add_button_links, add_button_listener, add_moments, get_ajax_urls, toggle_button, } from "./utils.js";
-// icon resembling state of toggle button
-export function set_logo(class_name, username, status) {
-    let logos = document.getElementsByClassName(class_name);
-    for (let logo of logos)
-        if (logo.dataset.username === username)
-            logo.style.display = status ? "inline-block" : "none";
-}
+import { add_button_links, add_button_listener, add_moments, get_ajax_urls, set_logo, toggle_button, } from "./utils.js";
 let ajax_urls = get_ajax_urls(["set-admin", "set-author"]);
 document.body.onload = () => {
     add_button_links();

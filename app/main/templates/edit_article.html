@@ -2,13 +2,15 @@
 
 {% block content %}
 {#
-- authors
 - references
 - resources
 - used extras
 #}
 
-{# metadata #}
+<h1>Edit <b>{{ article.title }}</b></h1>
+<hr>
+
+<h3>Metadata</h3>
 <form action="" method="post">
     {{ metadata_form.hidden_tag() }}
 
@@ -25,6 +27,55 @@
 
     <button type="submit" class="btn btn-primary">Update Metadata</button>
 </form>
+<hr>
+
+<h3>Authors</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Last Seen</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>
+                {{ user.username }}
+                <div class="is-author {% if not article.is_author(user) %}default-hidden{% else %}default-inline{% endif %}"
+                    data-id="{{ user.username }}">📕</div>
+            </td>
+            <td>
+                {{ user.full_name }}
+            </td>
+            <td>
+                <div class="moment-from-now" data-time="{{ user.last_seen }}"></div>
+            </td>
+
+            <td>
+                {% with %}
+                {% set class="btn-warning toggle-author" %}
+                {% set status=article.is_author(user) %}
+                {% set true_text="Revoke Author" %}
+                {% set false_text="Make Author" %}
+                {% set data={"username": user.username, "internal_name": article.internal_name} %}
+                {# can't revoke one self #}
+                {% set disabled=user == current_user %}
+                {% include "_toggle_button.html" %}
+                {% endwith %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% with %}
+{% set address="main.edit_article" %}
+{% set address_options={ "internal_name": article.internal_name } %}
+{% include "_pagination_links.html" %}
+{% endwith %}
 
 {# source update #}
 <form action="" method="post" enctype="multipart/form-data">
@@ -44,17 +95,10 @@
     data-url="{{ url_for('main.delete_article', internal_name=article.internal_name) }}">
     Delete Article
 </button>
-<hr>
-
-{# preview #}
-<h1>{{ article.title }}—Preview</h1>
-{% if article.subtitle %}<h3>{{ article.subtitle }}</h3>{% endif %}
-<i>By {{ article.get_authors() }}</i><br />
-<hr>
-{{ article.html|safe }}
-
 {% endblock %}
 
 {% block scripts %}
+<ajax_url id="set-author" url="{{ url_for('main.set_author') }}" />
+
 <script type="module" src="{{ url_for('static', filename='js/edit_article.js') }}"></script>
 {% endblock %}

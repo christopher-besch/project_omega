@@ -5,9 +5,9 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">name</th>
-            <th scope="col">full_name</th>
-            <th scope="col">last seen</th>
+            <th scope="col">Name</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Last Seen</th>
             <th scope="col"></th>
             <th scope="col"></th>
             <th scope="col"></th>
@@ -19,10 +19,10 @@
         <tr>
             <td>
                 {{ user.username }}
-                <div class="is-admin {% if not user.is_admin%}default-hidden{% else %}default-inline{% endif %}"
-                    data-username="{{ user.username }}">👑</div>
-                <div class="is-author {% if not user.is_author%}default-hidden{% else %}default-inline{% endif %}"
-                    data-username="{{ user.username }}">📕</div>
+                <div class="is-admin {% if not user.is_admin %}default-hidden{% else %}default-inline{% endif %}"
+                    data-id="{{ user.username }}">👑</div>
+                <div class="is-author {% if not user.is_author %}default-hidden{% else %}default-inline{% endif %}"
+                    data-id="{{ user.username }}">📕</div>
             </td>
             <td>
                 {{ user.full_name }}

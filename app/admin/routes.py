@@ -79,7 +79,7 @@ def set_author():
 
 
 # delete user
-@bp.route('/delete_user/<username>')
+@bp.route("/delete_user/<username>")
 @login_required
 def delete_user(username: str):
     admin_required()
@@ -91,7 +91,7 @@ def delete_user(username: str):
 
 # actually deleting an account
 # ajax
-@bp.route('/confirm_delete_user', methods=['POST'])
+@bp.route("/confirm_delete_user", methods=["POST"])
 @login_required
 def confirm_delete_user():
     admin_required()

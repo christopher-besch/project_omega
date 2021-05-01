@@ -105,17 +105,27 @@ export function add_button_links(): void {
     });
 }
 
+// icon resembling state of toggle button
+export function set_logo(class_name: string, id: string, status: boolean): void {
+    let logos = document.getElementsByClassName(class_name) as HTMLCollectionOf<HTMLElement>;
+    for (let logo of logos)
+        if (logo.dataset.id === id) logo.style.display = status ? "inline-block" : "none";
+}
+
 //////////////////
 // time control //
 //////////////////
 
 // load time stamps and convert into human readable format
 export function add_moments(): void {
-    let moment_divs = document.getElementsByClassName(
+    let moment_elements = document.getElementsByClassName(
         "moment-from-now"
     ) as HTMLCollectionOf<HTMLElement>;
-    for (let moment_div of moment_divs) {
-        let this_moment = moment.utc(moment_div.dataset.time as string, "YYYY-MM-DD HH:mm:ss.SSS");
-        moment_div.innerText = this_moment.fromNow();
+    for (let moment_element of moment_elements) {
+        let this_moment = moment.utc(
+            moment_element.dataset.time as string,
+            "YYYY-MM-DD HH:mm:ss.SSS"
+        );
+        moment_element.innerText = this_moment.fromNow();
     }
 }

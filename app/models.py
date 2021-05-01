@@ -125,7 +125,7 @@ class Article(db.Model):
                 self.authors.append(author)
 
     def rm_author(self, author: "User") -> None:
-        if self.is_cited(author):
+        if self.is_author(author):
             self.authors.remove(author)
 
     def is_author(self, author: "User") -> bool:
