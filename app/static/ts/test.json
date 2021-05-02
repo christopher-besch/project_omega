@@ -1,0 +1,16 @@
+{
+    "time_paths": [
+        { "start": null, "end": null, "parent_path": null },
+        { "start": 5, "end": null, "parent_path": null },
+        { "start": 2, "end": 7, "parent_path": 0 },
+        { "start": 6, "end": 8, "parent_path": 2 },
+        { "start": 1, "end": null, "parent_path": 0 }
+    ],
+    "time_stamps": [
+        { "path": 0, "start": 7, "end": null },
+        { "path": 0, "start": 8, "end": 9 },
+        { "path": 0, "start": 2, "end": null },
+        { "path": 2, "start": 6, "end": null },
+        { "path": 0, "start": 0, "end": null }
+    ]
+}
