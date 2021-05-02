@@ -1,13 +1,13 @@
-"use strict";
 // create TimePath objects with references to parent TimePath
 // create TimeStamp object for TimePath objects
 // tie up all TimeStamp objects <- requires TimeStamp object at start on parent TimePath
-class TimePath {
+export class TimePath {
     constructor(label, start = null, end = null, parent_path = null) {
         // gets defined later on if necessary
         this.start_time_stamp = null;
         // sorted at all time
         this.time_stamps = [];
+        this.renderer = undefined;
         this.label = label;
         if (start !== null && end !== null && end < start)
             throw new Error(`end of time path '${label}' can't be before start`);
@@ -40,6 +40,7 @@ class TimePath {
         if (this.parent_path === null || this.start === null)
             return;
         this.start_time_stamp = this.parent_path.get_time_stamp(this.start);
+        this.start_time_stamp.add_child_path(this);
         if (!this.start_time_stamp.no_width())
             throw new Error(`start and end of branching time stamp '${this.start_time_stamp.get_label()}' has to be the same to tie up time path '${this.label}'`);
     }
@@ -54,8 +55,11 @@ class TimePath {
         });
     }
 }
-class TimeStamp {
+export class TimeStamp {
     constructor(label, time_path, start, end = start) {
+        // all paths that have this their start_time_stamp
+        this.children_paths = [];
+        this.renderer = undefined;
         this.label = label;
         if (end < start)
             throw new Error(`end of time stamp '${label}' can't be before start`);
@@ -76,39 +80,29 @@ class TimeStamp {
     no_width() {
         return this.start == this.end;
     }
+    get_children_paths() {
+        return this.children_paths;
+    }
+    add_child_path(time_path) {
+        this.children_paths.push(time_path);
+    }
 }
-const input_raw = `
-{
-    "time_paths": [
-        { "label": "path a", "start": null, "end": null, "parent_path_id": null },
-        { "label": "path b", "start": 5, "end": null, "parent_path_id": null },
-        { "label": "path c", "start": 2, "end": 7, "parent_path_id": 0 },
-        { "label": "path d", "start": 6, "end": 8, "parent_path_id": 2 },
-        { "label": "path e", "start": 1, "end": null, "parent_path_id": 0 }
-    ],
-    "time_stamps": [
-        { "label": "stamp a", "path_id": 0, "start": 1, "end": null },
-        { "label": "stamp b", "path_id": 0, "start": 8, "end": 9 },
-        { "label": "stamp c", "path_id": 0, "start": 2, "end": null },
-        { "label": "stamp d", "path_id": 2, "start": 6, "end": null },
-        { "label": "stamp e", "path_id": 0, "start": 0, "end": null }
-    ]
+export function load_time_paths(input_json) {
+    const input = JSON.parse(input_json);
+    // time paths
+    let time_paths = [];
+    for (let time_path of input.time_paths)
+        if (time_path.parent_path_id === null)
+            time_paths.push(new TimePath(time_path.label, time_path.start, time_path.end));
+        // with parent path
+        else
+            time_paths.push(new TimePath(time_path.label, time_path.start, time_path.end, time_paths[time_path.parent_path_id]));
+    // time stamps
+    for (let time_stamp of input.time_stamps)
+        new TimeStamp(time_stamp.label, time_paths[time_stamp.path_id], time_stamp.start, time_stamp.end !== null ? time_stamp.end : time_stamp.start);
+    // tie up
+    for (let time_path of time_paths)
+        time_path.tie_up();
+    return time_paths;
 }
-`;
-const input = JSON.parse(input_raw);
-// time paths
-let time_paths = [];
-for (let time_path of input.time_paths)
-    if (time_path.parent_path_id === null)
-        time_paths.push(new TimePath(time_path.label, time_path.start, time_path.end));
-    // with parent path
-    else
-        time_paths.push(new TimePath(time_path.label, time_path.start, time_path.end, time_paths[time_path.parent_path_id]));
-// time stamps
-for (let time_stamp of input.time_stamps)
-    new TimeStamp(time_stamp.label, time_paths[time_stamp.path_id], time_stamp.start, time_stamp.end !== null ? time_stamp.end : time_stamp.start);
-// tie up
-for (let time_path of time_paths)
-    time_path.tie_up();
-console.log(time_paths);
 //# sourceMappingURL=time_beam.js.map
