@@ -116,4 +116,13 @@ export class TimePath {
                 );
         return this.height;
     }
+    get_height(): number {
+        if (this.height === null) throw new Error("height not calculated yet");
+        return this.height;
+    }
+    // return location of upper and lower border
+    set_location(y: number): [number, number] {
+        this.x = x;
+        this.y = y;
+    }
 }

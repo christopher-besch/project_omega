@@ -74,5 +74,15 @@ export class TimePath {
                 this.height += child_time_path.calculate_height(height_per_path);
         return this.height;
     }
+    get_height() {
+        if (this.height === null)
+            throw new Error("height not calculated yet");
+        return this.height;
+    }
+    // return location of upper and lower border
+    set_location(y) {
+        this.x = x;
+        this.y = y;
+    }
 }
 //# sourceMappingURL=time_path.js.map
