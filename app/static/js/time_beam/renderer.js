@@ -1,3 +1,15 @@
+function print_full_path(time_paths) {
+    function print_path(path, intends = 0) {
+        console.log(`${">".repeat(intends)}${path.get_label()}:`);
+        console.log(`${">".repeat(intends)} location: ${path.get_path_y()}`);
+        console.log(`${">".repeat(intends)} main_path location: ${path.get_main_path_y()}`);
+        for (let child of path.get_child_paths())
+            print_path(child, ++intends);
+    }
+    for (let path of time_paths) {
+        print_path(path);
+    }
+}
 export function load_positions(time_paths) {
     const height_per_path = 20;
     const y_start = 0;
@@ -5,22 +17,15 @@ export function load_positions(time_paths) {
     for (let time_path of time_paths)
         if (time_path.get_parent_time_stamp() === null)
             root_time_paths.push(time_path);
-    for (let time_path of root_time_paths)
-        time_path.calculate_height(height_per_path);
-    // biggest first
-    root_time_paths.sort((a, b) => {
-        return b.get_height() - a.get_height();
-    });
-    if (root_time_paths.length == 0)
-        throw new Error("at least one time path is required");
-    // let [
-    //     current_upper_bound,
-    //     current_lower_bound,
-    // ] = root_time_paths[0].set_location(
-    //     0,
-    //     root_time_paths[0].get_height() / 2,
-    //     -root_time_paths[0].get_height() / 2
-    // );
-    // for (let idx = 0; idx < root_time_paths.length; idx++) {}
+    // settings
+    let lower_bound = y_start;
+    let upper_bound = y_start;
+    for (let idx = 0; idx < root_time_paths.length; ++idx) {
+        if (idx % 2)
+            lower_bound += root_time_paths[idx].calculate_positions(height_per_path, lower_bound, false);
+        else
+            upper_bound -= root_time_paths[idx].calculate_positions(height_per_path, upper_bound, true);
+        print_full_path([root_time_paths[idx]]);
+    }
 }
 //# sourceMappingURL=renderer.js.map

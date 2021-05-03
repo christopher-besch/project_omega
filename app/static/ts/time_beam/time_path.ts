@@ -11,7 +11,7 @@ export class TimePath {
     private start_in_parent: number | null;
     // gets defined in tie_up if necessary
     private parent_time_stamp: TimeStamp | null = null;
-    // private child_paths: TimePath[] = [];
+    private child_paths: TimePath[] = [];
     // sorted at all time
     private time_stamps: TimeStamp[] = [];
 
@@ -21,8 +21,8 @@ export class TimePath {
     // relative to origin of parent path or global origin if root path
     // <- for this path and all children
     path_y: number | null = null;
-    // relative to this path's origin
-    start_y: number | null = null;
+    // location of main path relative to this path's origin
+    main_y: number | null = null;
     // null if root path
     connect_up: boolean | null = null;
 
@@ -73,6 +73,27 @@ export class TimePath {
     get_parent_time_stamp(): TimeStamp | null {
         return this.parent_time_stamp;
     }
+    get_child_paths(): TimePath[] {
+        return this.child_paths;
+    }
+    // relative to origin of parent path or global origin if root path
+    // <- for this path and all children
+    get_path_y(): number {
+        if (this.path_y === null)
+            throw new Error(`path_y of '${this.label}' is null`);
+        return this.path_y;
+    }
+    // relative to this path's origin
+    get_main_path_y(): number {
+        if (this.main_y === null)
+            throw new Error(`start_y of '${this.label}' is null`);
+        return this.main_y;
+    }
+    get_connected_up(): boolean {
+        if (this.connect_up === null)
+            throw new Error(`connect_up of '${this.label}' is null`);
+        return this.connect_up;
+    }
 
     // connect to parent branch at specified location
     tie_up(): void {
@@ -109,11 +130,34 @@ export class TimePath {
     ///////////////
     // rendering //
     ///////////////
-    // return added height -> space between path_y and bound belongs to this path
-    // go_up -> allocate space just above or below path_y
+    move(amount: number, go_up: boolean): void {
+        if (this.path_y === null)
+            throw new Error(`path_y of '${this.label}' is null`);
+        if (go_up)
+            this.path_y -= amount;
+        else
+            this.path_y += amount;
+    }
+    // move this path with all children up or down
+    move_line_children(amount: number, go_up: boolean): void {
+        // move line
+        if (this.main_y === null)
+            throw new Error(`start_y of '${this.label}' is null`);
+        if (go_up)
+            this.main_y -= amount;
+        else
+            this.main_y += amount;
+        // move entire children
+        for (let child_path of this.child_paths) {
+            child_path.move(amount, go_up);
+        }
+    }
+
+    // return added height -> space between fixed_bound and bound belongs to this path
+    // go_up -> allocate space just above or below fixed_bound
     calculate_positions(
         height_per_path: number,
-        path_y: number,
+        fixed_bound: number,
         go_up: boolean
     ): number {
         // todo: store connection type
@@ -124,39 +168,49 @@ export class TimePath {
         let upper_bound: number;
         let lower_bound: number;
         if (go_up) {
-            upper_bound = path_y - height_per_path;
-            lower_bound = path_y;
+            upper_bound = fixed_bound - height_per_path;
+            lower_bound = fixed_bound;
         } else {
-            upper_bound = path_y;
-            lower_bound = path_y + height_per_path;
+            upper_bound = fixed_bound;
+            lower_bound = fixed_bound + height_per_path;
         }
+        // start at bottom
+        this.main_y = 0;
 
         // go through all child paths
+        this.child_paths = [];
         let idx = 0;
         for (let time_stamp of this.time_stamps)
-            for (let child_time_path of time_stamp.get_children_paths()) {
+            for (let child_path of time_stamp.get_children_paths()) {
                 if (idx % 2) {
                     // start at bottom and go down
-                    let added_height = child_time_path.calculate_positions(height_per_path, lower_bound, false);
+                    let added_height = child_path.calculate_positions(height_per_path, upper_bound - lower_bound, false);
                     if (go_up) {
-                        // move everything up
+                        // move everything up <- things have been added below and are overlapping already added paths
                         // todo: add enum for movement direction
-                        this.move(added_height, true);
-                        // lower bound is fixed
+                        this.move_line_children(added_height, true);
+                        // lower bound fixed
+                        upper_bound -= added_height;
+                    } else {
+                        // everything has been added at the variable end -> nothing has to be moved
+                        // upper bound fixed
+                        lower_bound += added_height;
                     }
-                    // upper bound fixed
-                    lower_bound += added_height;
                 } else {
                     // start at top and go up
-                    let added_height = child_time_path.calculate_positions(height_per_path, upper_bound, true);
-                    if (!go_up) {
-                        this.move(added_height, false);
+                    let added_height = child_path.calculate_positions(height_per_path, 0, true);
+                    if (go_up) {
+                        upper_bound -= added_height;
+                    } else {
+                        this.move_line_children(added_height, false);
+                        lower_bound += added_height;
                     }
-                    upper_bound -= added_height;
                 }
+                this.child_paths.push(child_path);
                 ++idx;
             }
         this.path_y = lower_bound;
         return lower_bound - upper_bound;
+        // todo: use global coordinates
     }
 }
