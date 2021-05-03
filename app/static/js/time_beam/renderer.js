@@ -13,7 +13,14 @@ export function load_positions(time_paths) {
     });
     if (root_time_paths.length == 0)
         throw new Error("at least one time path is required");
-    let [current_upper_bound, current_lower_bound,] = root_time_paths[0].set_location(0, root_time_paths[0].get_height() / 2, -root_time_paths[0].get_height() / 2);
-    for (let idx = 0; idx < root_time_paths.length; idx++) { }
+    // let [
+    //     current_upper_bound,
+    //     current_lower_bound,
+    // ] = root_time_paths[0].set_location(
+    //     0,
+    //     root_time_paths[0].get_height() / 2,
+    //     -root_time_paths[0].get_height() / 2
+    // );
+    // for (let idx = 0; idx < root_time_paths.length; idx++) {}
 }
 //# sourceMappingURL=renderer.js.map

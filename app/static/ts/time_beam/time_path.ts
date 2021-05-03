@@ -9,17 +9,22 @@ export class TimePath {
     // null when this path is not a branch of a different path
     private parent_path: TimePath | null;
     private start_in_parent: number | null;
-    // gets defined later on if necessary
+    // gets defined in tie_up if necessary
     private parent_time_stamp: TimeStamp | null = null;
+    // private child_paths: TimePath[] = [];
     // sorted at all time
     private time_stamps: TimeStamp[] = [];
 
     ////////////
     // render //
     ////////////
-    private x: number | null = null;
-    private y: number | null = null;
-    private height: number | null = null;
+    // relative to origin of parent path or global origin if root path
+    // <- for this path and all children
+    path_y: number | null = null;
+    // relative to this path's origin
+    start_y: number | null = null;
+    // null if root path
+    connect_up: boolean | null = null;
 
     constructor(
         label: string,
@@ -69,7 +74,7 @@ export class TimePath {
         return this.parent_time_stamp;
     }
 
-    // connect to parent branch
+    // connect to parent branch at specified location
     tie_up(): void {
         // no tie up needed <- no parent path
         if (this.parent_path === null || this.start_in_parent === null) return;
@@ -79,8 +84,7 @@ export class TimePath {
         this.parent_time_stamp.add_child_path(this);
         if (!this.parent_time_stamp.no_width())
             throw new Error(
-                `start and end of branching time stamp '${this.parent_time_stamp.get_label()}' has to be the same to tie up time path '${
-                    this.label
+                `start and end of branching time stamp '${this.parent_time_stamp.get_label()}' has to be the same to tie up time path '${this.label
                 }'`
             );
     }
@@ -89,14 +93,12 @@ export class TimePath {
         this.time_stamps.push(time_stamp);
         if (this.start !== null && time_stamp.get_start() < this.start)
             throw new Error(
-                `start of time stamp '${time_stamp.get_label()}' needs to be at or after start of time path '${
-                    this.label
+                `start of time stamp '${time_stamp.get_label()}' needs to be at or after start of time path '${this.label
                 }'`
             );
         if (this.end !== null && time_stamp.get_end() > this.end)
             throw new Error(
-                `end of time stamp '${time_stamp.get_label()}' needs to be at or before end of time path '${
-                    this.label
+                `end of time stamp '${time_stamp.get_label()}' needs to be at or before end of time path '${this.label
                 }'`
             );
         this.time_stamps.sort((a, b): number => {
@@ -107,22 +109,54 @@ export class TimePath {
     ///////////////
     // rendering //
     ///////////////
-    calculate_height(height_per_path: number): number {
-        this.height = height_per_path;
+    // return added height -> space between path_y and bound belongs to this path
+    // go_up -> allocate space just above or below path_y
+    calculate_positions(
+        height_per_path: number,
+        path_y: number,
+        go_up: boolean
+    ): number {
+        // todo: store connection type
+
+        // this much space is required by this path herself
+        // low bound is fixed if above, else upper bound fixed
+        // other bound gets moved away from the start depending on amount of recursive child paths
+        let upper_bound: number;
+        let lower_bound: number;
+        if (go_up) {
+            upper_bound = path_y - height_per_path;
+            lower_bound = path_y;
+        } else {
+            upper_bound = path_y;
+            lower_bound = path_y + height_per_path;
+        }
+
+        // go through all child paths
+        let idx = 0;
         for (let time_stamp of this.time_stamps)
-            for (let child_time_path of time_stamp.get_children_paths())
-                this.height += child_time_path.calculate_height(
-                    height_per_path
-                );
-        return this.height;
-    }
-    get_height(): number {
-        if (this.height === null) throw new Error("height not calculated yet");
-        return this.height;
-    }
-    // return location of upper and lower border
-    set_location(y: number): [number, number] {
-        this.x = x;
-        this.y = y;
+            for (let child_time_path of time_stamp.get_children_paths()) {
+                if (idx % 2) {
+                    // start at bottom and go down
+                    let added_height = child_time_path.calculate_positions(height_per_path, lower_bound, false);
+                    if (go_up) {
+                        // move everything up
+                        // todo: add enum for movement direction
+                        this.move(added_height, true);
+                        // lower bound is fixed
+                    }
+                    // upper bound fixed
+                    lower_bound += added_height;
+                } else {
+                    // start at top and go up
+                    let added_height = child_time_path.calculate_positions(height_per_path, upper_bound, true);
+                    if (!go_up) {
+                        this.move(added_height, false);
+                    }
+                    upper_bound -= added_height;
+                }
+                ++idx;
+            }
+        this.path_y = lower_bound;
+        return lower_bound - upper_bound;
     }
 }
