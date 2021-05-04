@@ -89,7 +89,7 @@ export class TimePath {
             throw new Error(`start_y of '${this.label}' is null`);
         return this.main_y;
     }
-    get_connected_up(): boolean {
+    get_connect_up(): boolean {
         if (this.connect_up === null)
             throw new Error(`connect_up of '${this.label}' is null`);
         return this.connect_up;
@@ -155,12 +155,14 @@ export class TimePath {
 
     // return added height -> space between fixed_bound and bound belongs to this path
     // go_up -> allocate space just above or below fixed_bound
+    // connect_up -> connect to parent path up or down
     calculate_positions(
         height_per_path: number,
         fixed_bound: number,
-        go_up: boolean
+        go_up: boolean,
+        connect_up: boolean | null
     ): number {
-        // todo: store connection type
+        this.connect_up = connect_up;
 
         // this much space is required by this path herself
         // low bound is fixed if above, else upper bound fixed
@@ -175,7 +177,7 @@ export class TimePath {
             lower_bound = fixed_bound + height_per_path;
         }
         // start at bottom
-        this.main_y = 0;
+        this.main_y = lower_bound;
 
         // go through all child paths
         this.child_paths = [];
@@ -183,25 +185,28 @@ export class TimePath {
         for (let time_stamp of this.time_stamps)
             for (let child_path of time_stamp.get_children_paths()) {
                 if (idx % 2) {
-                    // start at bottom and go down
-                    let added_height = child_path.calculate_positions(height_per_path, upper_bound - lower_bound, false);
                     if (go_up) {
+                        // start at bottom and go up
+                        let added_height = child_path.calculate_positions(height_per_path, lower_bound, true, true);
                         // move everything up <- things have been added below and are overlapping already added paths
-                        // todo: add enum for movement direction
                         this.move_line_children(added_height, true);
                         // lower bound fixed
                         upper_bound -= added_height;
                     } else {
+                        // start at bottom and go down
+                        let added_height = child_path.calculate_positions(height_per_path, lower_bound, false, true);
                         // everything has been added at the variable end -> nothing has to be moved
                         // upper bound fixed
                         lower_bound += added_height;
                     }
                 } else {
-                    // start at top and go up
-                    let added_height = child_path.calculate_positions(height_per_path, 0, true);
                     if (go_up) {
+                        // start at top and go up
+                        let added_height = child_path.calculate_positions(height_per_path, upper_bound, true, false);
                         upper_bound -= added_height;
                     } else {
+                        // start at top and go down
+                        let added_height = child_path.calculate_positions(height_per_path, upper_bound, false, false);
                         this.move_line_children(added_height, false);
                         lower_bound += added_height;
                     }
