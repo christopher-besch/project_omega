@@ -15,7 +15,17 @@ const input_json = `
         },
         { "label": "path e", "start": 1, "end": null, "parent_path_id": 0 },
         { "label": "path f" },
-        { "label": "path g" }
+        { "label": "path g", "start": 0, "parent_path_id": 5 },
+        { "label": "path h", "start": 0, "parent_path_id": 6 },
+        { "label": "path i", "start": 0, "parent_path_id": 7 },
+        { "label": "path j", "start": 0, "parent_path_id": 8 },
+        { "label": "path k", "start": 0, "parent_path_id": 9 },
+        { "label": "path l", "start": 0, "parent_path_id": 10 },
+        { "label": "path m", "start": 0, "parent_path_id": 11 },
+        { "label": "path n", "start": 0, "parent_path_id": 11 },
+
+        { "label": "path o", "start": 0, "parent_path_id": 5 },
+        { "label": "path p", "start": 0, "parent_path_id": 5 }
     ],
     "time_stamps": [
         { "label": "stamp a", "path_id": 0, "start": 1 },
@@ -23,7 +33,14 @@ const input_json = `
         { "label": "stamp c", "path_id": 0, "start": 2 },
         { "label": "stamp d", "path_id": 2, "start": 6 },
         { "label": "stamp e", "path_id": 0, "start": 0 },
-        { "label": "stamp f", "path_id": 2, "start": 3 }
+        { "label": "stamp f", "path_id": 2, "start": 3 },
+        { "label": "stamp g", "path_id": 5, "start": 0 },
+        { "label": "stamp h", "path_id": 6, "start": 0 },
+        { "label": "stamp i", "path_id": 7, "start": 0 },
+        { "label": "stamp j", "path_id": 8, "start": 0 },
+        { "label": "stamp k", "path_id": 9, "start": 0 },
+        { "label": "stamp l", "path_id": 10, "start": 0 },
+        { "label": "stamp m", "path_id": 11, "start": 0 }
     ]
 }
 `;
