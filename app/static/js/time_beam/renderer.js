@@ -8,6 +8,8 @@ export class Camera {
         this.right_bound = right_bound;
         this.lower_bound = lower_bound;
         this.upper_bound = upper_bound;
+        this.scale_x = ctx.canvas.width / (this.right_bound - this.left_bound);
+        this.scale_y = ctx.canvas.height / (this.lower_bound - this.upper_bound);
         this.ctx = ctx;
     }
     is_viewable(left_bound, right_bound, lower_bound, upper_bound) {
@@ -19,8 +21,8 @@ export class Camera {
     // relative to canvas
     get_rel_locations(x, y) {
         return [
-            x - this.left_bound,
-            y - this.upper_bound
+            (x - this.left_bound) * this.scale_x,
+            (y - this.upper_bound) * this.scale_y
         ];
     }
 }

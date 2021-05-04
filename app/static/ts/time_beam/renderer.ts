@@ -4,6 +4,9 @@ export class Camera {
     lower_bound: number;
     upper_bound: number;
 
+    scale_x: number;
+    scale_y: number;
+
     ctx: CanvasRenderingContext2D;
 
     constructor(left_bound: number, right_bound: number, lower_bound: number, upper_bound: number, ctx: CanvasRenderingContext2D) {
@@ -16,6 +19,10 @@ export class Camera {
         this.right_bound = right_bound;
         this.lower_bound = lower_bound;
         this.upper_bound = upper_bound;
+
+        this.scale_x = ctx.canvas.width / (this.right_bound - this.left_bound);
+        this.scale_y = ctx.canvas.height / (this.lower_bound - this.upper_bound);
+
         this.ctx = ctx;
     }
 
@@ -29,8 +36,8 @@ export class Camera {
     // relative to canvas
     get_rel_locations(x: number, y: number): [number, number] {
         return [
-            x - this.left_bound,
-            y - this.upper_bound
+            (x - this.left_bound) * this.scale_x,
+            (y - this.upper_bound) * this.scale_y
         ];
     }
 }
