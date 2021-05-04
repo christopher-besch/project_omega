@@ -13,6 +13,9 @@ export class TimeStamp {
     get_label() {
         return this.label;
     }
+    get_path() {
+        return this.path;
+    }
     get_start() {
         return this.start;
     }
@@ -24,9 +27,6 @@ export class TimeStamp {
     }
     get_child_paths() {
         return this.children_paths;
-    }
-    get_path() {
-        return this.path;
     }
     add_child_path(time_path) {
         this.children_paths.push(time_path);

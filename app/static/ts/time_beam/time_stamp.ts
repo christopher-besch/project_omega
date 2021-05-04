@@ -21,6 +21,9 @@ export class TimeStamp {
     get_label(): string {
         return this.label;
     }
+    get_path(): TimePath {
+        return this.path;
+    }
     get_start(): number {
         return this.start;
     }
@@ -32,9 +35,6 @@ export class TimeStamp {
     }
     get_child_paths(): TimePath[] {
         return this.children_paths;
-    }
-    get_path(): TimePath {
-        return this.path;
     }
 
     add_child_path(time_path: TimePath): void {

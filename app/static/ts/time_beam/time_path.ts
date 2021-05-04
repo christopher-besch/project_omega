@@ -6,6 +6,7 @@ export class TimePath {
     // null when infinity
     private start: number | null;
     private end: number | null;
+
     // null when this path is not a branch of a different path -> orphan
     private parent_path: TimePath | null;
     private start_in_parent: number | null;
@@ -13,13 +14,15 @@ export class TimePath {
     private parent_time_stamp: TimeStamp | null = null;
     // null when not calculated yet
     private child_paths: TimePath[] | null = null;
+
     // sorted at all time
     private time_stamps: TimeStamp[] = [];
 
-    // location of this path and all children
-    path_y: number | null = null;
+    // location of this path and all children, this much space is required by this path herself
+    upper_bound: number | null = null;
+    lower_bound: number | null = null;
     // location of main path only
-    main_path_y: number | null = null;
+    main_path_lower_bound: number | null = null;
 
     constructor(
         label: string,
@@ -44,26 +47,40 @@ export class TimePath {
             throw new Error(`branched time path '${label}' needs a start`);
     }
 
+    /////////////
+    // getters //
+    /////////////
     get_label(): string {
         return this.label;
     }
     has_start(): boolean {
         return this.start !== null;
     }
+    get_start(): number {
+        if (this.start === null)
+            throw new Error(`start of path '${this.label}' is null`);
+        return this.start;
+    }
     has_end(): boolean {
         return this.end !== null;
     }
-    get_time_stamp(start: number): TimeStamp {
-        const match = this.time_stamps.find((time_stamp): boolean => {
-            return time_stamp.get_start() == start;
-        });
-        if (match === undefined)
-            throw new Error(
-                `can't find time stamp with start of ${start}s in time path '${this.label}'`
-            );
-        return match;
+    get_end(): number {
+        if (this.end === null)
+            throw new Error(`start of path '${this.label}' is null`);
+        return this.end;
     }
-    get_parent_time_stamp(): TimeStamp | null {
+
+    is_child(): boolean {
+        return this.parent_path !== null;
+    }
+    get_parent_path(): TimePath {
+        if (this.parent_path === null)
+            throw new Error(`parent_path of path '${this.label}' is null`);
+        return this.parent_path;
+    }
+    get_parent_time_stamp(): TimeStamp {
+        if (this.parent_time_stamp === null)
+            throw new Error(`parent_time_stamp for time path '${this.label}' is null`);
         return this.parent_time_stamp;
     }
     get_child_paths(): TimePath[] {
@@ -71,80 +88,105 @@ export class TimePath {
             throw new Error(`child_paths of path '${this.label}' is null`);
         return this.child_paths;
     }
-    // relative to origin of parent path or global origin if root path
-    // <- for this path and all children
-    get_path_y(): number {
-        if (this.path_y === null)
-            throw new Error(`path_y of '${this.label}' is null`);
-        return this.path_y;
+
+    get_time_stamps(): TimeStamp[] {
+        return this.time_stamps;
     }
-    // relative to this path's origin
-    get_main_path_y(): number {
-        if (this.main_path_y === null)
-            throw new Error(`start_y of '${this.label}' is null`);
-        return this.main_path_y;
-    }
-    is_child(): boolean {
-        return this.parent_time_stamp !== null;
+    // get time stamp with certain start
+    get_time_stamp(start: number): TimeStamp {
+        const match = this.time_stamps.find((time_stamp): boolean => {
+            return time_stamp.get_start() == start;
+        });
+        if (match === undefined)
+            throw new Error(`can't find time stamp with start of ${start}s in time path '${this.label}'`);
+        return match;
     }
 
+    get_upper_bound(): number {
+        if (this.upper_bound === null)
+            throw new Error(`upper_bound of time path '${this.label}' is null`);
+        return this.upper_bound;
+    }
+    get_lower_bound(): number {
+        if (this.lower_bound === null)
+            throw new Error(`lower_bound path '${this.label}' is null`);
+        return this.lower_bound;
+    }
+    // relative to this path's origin
+    get_main_path_lower_bound(): number {
+        if (this.main_path_lower_bound === null)
+            throw new Error(`main_path_lower_bound of '${this.label}' is null`);
+        return this.main_path_lower_bound;
+    }
+
+    get_connected_to(): number {
+        if (this.parent_path === null)
+            throw new Error(`parent_path for time path '${this.label}' is null`);
+        return this.parent_path.get_main_path_lower_bound();
+    }
+
+    //////////////////
+    // calculations //
+    //////////////////
     // connect to parent branch at specified location
     tie_up(): void {
         // no tie up needed <- no parent path
         if (this.parent_path === null || this.start_in_parent === null) return;
-        this.parent_time_stamp = this.parent_path.get_time_stamp(
-            this.start_in_parent
-        );
+        this.parent_time_stamp = this.parent_path.get_time_stamp(this.start_in_parent);
         this.parent_time_stamp.add_child_path(this);
         if (!this.parent_time_stamp.no_width())
-            throw new Error(
-                `start and end of branching time stamp '${this.parent_time_stamp.get_label()}' has to be the same to tie up time path '${this.label
-                }'`
-            );
+            throw new Error(`start and end of branching time stamp '${this.parent_time_stamp.get_label()}' has to be the same`);
     }
 
     add_time_stamp(time_stamp: TimeStamp): void {
         this.time_stamps.push(time_stamp);
         if (this.start !== null && time_stamp.get_start() < this.start)
-            throw new Error(
-                `start of time stamp '${time_stamp.get_label()}' needs to be at or after start of time path '${this.label
-                }'`
-            );
+            throw new Error(`start of time stamp '${time_stamp.get_label()}' needs to be at or after start of time path '${this.label}'`);
         if (this.end !== null && time_stamp.get_end() > this.end)
-            throw new Error(
-                `end of time stamp '${time_stamp.get_label()}' needs to be at or before end of time path '${this.label
-                }'`
-            );
+            throw new Error(`end of time stamp '${time_stamp.get_label()}' needs to be at or before end of time path '${this.label}'`);
+        // sorted at all time
         this.time_stamps.sort((a, b): number => {
             return a.get_start() - b.get_start();
         });
     }
 
-    ///////////////
-    // rendering //
-    ///////////////
     move(amount: number, go_up: boolean): void {
-        if (this.path_y === null)
-            throw new Error(`path_y of '${this.label}' is null`);
+        if (this.lower_bound === null)
+            throw new Error(`lower_bound of '${this.label}' is null`);
+        if (this.upper_bound === null)
+            throw new Error(`upper_bound of '${this.label}' is null`);
+        if (this.main_path_lower_bound === null)
+            throw new Error(`main_path_lower_bound '${this.label}' is null`);
+        if (this.child_paths === null)
+            throw new Error(`child_paths '${this.label}' is null`);
+
+        // move path with main path
         if (go_up) {
-            this.path_y -= amount;
+            this.lower_bound -= amount;
+            this.upper_bound -= amount;
+            this.main_path_lower_bound -= amount;
         }
         else {
-            this.path_y += amount;
+            this.lower_bound += amount;
+            this.upper_bound += amount;
+            this.main_path_lower_bound += amount;
         }
+        // move all children
+        for (let child_path of this.child_paths)
+            child_path.move(amount, go_up);
 
     }
-    // move this path with all children up or down
-    move_line_children(amount: number, go_up: boolean): void {
+    // don't move upper and lower bound
+    move_main_path_and_children(amount: number, go_up: boolean): void {
         // move line
-        if (this.main_path_y === null)
-            throw new Error(`start_y of '${this.label}' is null`);
+        if (this.main_path_lower_bound === null)
+            throw new Error(`main_path_lower_bound of '${this.label}' is null`);
         if (this.child_paths === null)
             throw new Error(`child_paths of '${this.label}' is null`);
         if (go_up)
-            this.main_path_y -= amount;
+            this.main_path_lower_bound -= amount;
         else
-            this.main_path_y += amount;
+            this.main_path_lower_bound += amount;
         // move entire children
         for (let child_path of this.child_paths) {
             child_path.move(amount, go_up);
@@ -159,20 +201,17 @@ export class TimePath {
         fixed_bound: number,
         go_up: boolean
     ): number {
-        // this much space is required by this path herself
         // low bound is fixed if above, else upper bound fixed
         // other bound gets moved away from the start depending on amount of recursive child paths
-        let upper_bound: number;
-        let lower_bound: number;
         if (go_up) {
-            upper_bound = fixed_bound - height_per_path;
-            lower_bound = fixed_bound;
+            this.upper_bound = fixed_bound - height_per_path;
+            this.lower_bound = fixed_bound;
         } else {
-            upper_bound = fixed_bound;
-            lower_bound = fixed_bound + height_per_path;
+            this.upper_bound = fixed_bound;
+            this.lower_bound = fixed_bound + height_per_path;
         }
         // start at bottom
-        this.main_path_y = lower_bound;
+        this.main_path_lower_bound = this.lower_bound;
 
         // go through all child paths
         this.child_paths = [];
@@ -182,34 +221,34 @@ export class TimePath {
                 if (idx % 2) {
                     if (go_up) {
                         // start at bottom and go up
-                        let added_height = child_path.calculate_positions(height_per_path, lower_bound, true);
+                        let added_height = child_path.calculate_positions(height_per_path, this.lower_bound, true);
                         // move everything up <- things have been added below and are overlapping already added paths
-                        this.move_line_children(added_height, true);
+                        this.move_main_path_and_children(added_height, true);
                         // lower bound fixed
-                        upper_bound -= added_height;
+                        this.upper_bound -= added_height;
                     } else {
                         // start at bottom and go down
-                        let added_height = child_path.calculate_positions(height_per_path, lower_bound, false);
+                        let added_height = child_path.calculate_positions(height_per_path, this.lower_bound, false);
                         // everything has been added at the variable end -> nothing has to be moved
                         // upper bound fixed
-                        lower_bound += added_height;
+                        this.lower_bound += added_height;
                     }
                 } else {
                     if (go_up) {
                         // start at top and go up
-                        let added_height = child_path.calculate_positions(height_per_path, upper_bound, true);
-                        upper_bound -= added_height;
+                        let added_height = child_path.calculate_positions(height_per_path, this.upper_bound, true);
+                        this.upper_bound -= added_height;
                     } else {
                         // start at top and go down
-                        let added_height = child_path.calculate_positions(height_per_path, upper_bound, false);
-                        this.move_line_children(added_height, false);
-                        lower_bound += added_height;
+                        let added_height = child_path.calculate_positions(height_per_path, this.upper_bound, false);
+                        this.move_main_path_and_children(added_height, false);
+                        this.lower_bound += added_height;
                     }
                 }
+                // after everything else has been moved into place
                 this.child_paths.push(child_path);
                 ++idx;
             }
-        this.path_y = lower_bound;
-        return lower_bound - upper_bound;
+        return this.lower_bound - this.upper_bound;
     }
 }
