@@ -22,9 +22,7 @@ export class TimePath {
     // <- for this path and all children
     path_y: number | null = null;
     // location of main path relative to this path's origin
-    main_y: number | null = null;
-    // null if root path
-    connect_up: boolean | null = null;
+    main_path_y: number | null = null;
 
     constructor(
         label: string,
@@ -85,14 +83,12 @@ export class TimePath {
     }
     // relative to this path's origin
     get_main_path_y(): number {
-        if (this.main_y === null)
+        if (this.main_path_y === null)
             throw new Error(`start_y of '${this.label}' is null`);
-        return this.main_y;
+        return this.main_path_y;
     }
-    get_connect_up(): boolean {
-        if (this.connect_up === null)
-            throw new Error(`connect_up of '${this.label}' is null`);
-        return this.connect_up;
+    is_child(): boolean {
+        return this.parent_time_stamp !== null;
     }
 
     // connect to parent branch at specified location
@@ -133,20 +129,23 @@ export class TimePath {
     move(amount: number, go_up: boolean): void {
         if (this.path_y === null)
             throw new Error(`path_y of '${this.label}' is null`);
-        if (go_up)
+        if (go_up) {
             this.path_y -= amount;
-        else
+        }
+        else {
             this.path_y += amount;
+        }
+
     }
     // move this path with all children up or down
     move_line_children(amount: number, go_up: boolean): void {
         // move line
-        if (this.main_y === null)
+        if (this.main_path_y === null)
             throw new Error(`start_y of '${this.label}' is null`);
         if (go_up)
-            this.main_y -= amount;
+            this.main_path_y -= amount;
         else
-            this.main_y += amount;
+            this.main_path_y += amount;
         // move entire children
         for (let child_path of this.child_paths) {
             child_path.move(amount, go_up);
@@ -159,11 +158,8 @@ export class TimePath {
     calculate_positions(
         height_per_path: number,
         fixed_bound: number,
-        go_up: boolean,
-        connect_up: boolean | null
+        go_up: boolean
     ): number {
-        this.connect_up = connect_up;
-
         // this much space is required by this path herself
         // low bound is fixed if above, else upper bound fixed
         // other bound gets moved away from the start depending on amount of recursive child paths
@@ -177,7 +173,7 @@ export class TimePath {
             lower_bound = fixed_bound + height_per_path;
         }
         // start at bottom
-        this.main_y = lower_bound;
+        this.main_path_y = lower_bound;
 
         // go through all child paths
         this.child_paths = [];
@@ -187,14 +183,14 @@ export class TimePath {
                 if (idx % 2) {
                     if (go_up) {
                         // start at bottom and go up
-                        let added_height = child_path.calculate_positions(height_per_path, lower_bound, true, true);
+                        let added_height = child_path.calculate_positions(height_per_path, lower_bound, true);
                         // move everything up <- things have been added below and are overlapping already added paths
                         this.move_line_children(added_height, true);
                         // lower bound fixed
                         upper_bound -= added_height;
                     } else {
                         // start at bottom and go down
-                        let added_height = child_path.calculate_positions(height_per_path, lower_bound, false, true);
+                        let added_height = child_path.calculate_positions(height_per_path, lower_bound, false);
                         // everything has been added at the variable end -> nothing has to be moved
                         // upper bound fixed
                         lower_bound += added_height;
@@ -202,11 +198,11 @@ export class TimePath {
                 } else {
                     if (go_up) {
                         // start at top and go up
-                        let added_height = child_path.calculate_positions(height_per_path, upper_bound, true, false);
+                        let added_height = child_path.calculate_positions(height_per_path, upper_bound, true);
                         upper_bound -= added_height;
                     } else {
                         // start at top and go down
-                        let added_height = child_path.calculate_positions(height_per_path, upper_bound, false, false);
+                        let added_height = child_path.calculate_positions(height_per_path, upper_bound, false);
                         this.move_line_children(added_height, false);
                         lower_bound += added_height;
                     }
@@ -216,6 +212,5 @@ export class TimePath {
             }
         this.path_y = lower_bound;
         return lower_bound - upper_bound;
-        // todo: use global coordinates
     }
 }

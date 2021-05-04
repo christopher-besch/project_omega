@@ -33,6 +33,9 @@ export class TimeStamp {
     get_children_paths(): TimePath[] {
         return this.children_paths;
     }
+    get_time_path(): TimePath {
+        return this.time_path;
+    }
 
     add_child_path(time_path: TimePath): void {
         this.children_paths.push(time_path);
