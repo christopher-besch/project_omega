@@ -1,5 +1,4 @@
-import { load_time_paths } from "./time_beam/load.js";
-import { load_positions } from "./time_beam/renderer.js";
+import { Camera, Line } from "./time_beam/renderer.js";
 const input_json = `
 {
     "time_paths": [
@@ -44,6 +43,13 @@ const input_json = `
     ]
 }
 `;
-let time_paths = load_time_paths(input_json);
-load_positions(time_paths);
+// let root_time_paths = load_time_paths(input_json);
+// print_full_path(root_time_paths);
+let canvas = document.getElementById("time-beam-canvas");
+canvas.width = canvas.scrollWidth;
+canvas.height = canvas.scrollHeight;
+let ctx = canvas.getContext("2d");
+let camera = new Camera(0, 100, 100, 0, ctx);
+let line = new Line(20, 50, 20, 50);
+line.draw(camera);
 //# sourceMappingURL=time_beam.js.map
