@@ -3,25 +3,22 @@ import { TimeStamp } from "./time_stamp.js";
 export class TimePath {
     private label: string;
     // in seconds
-    // null when without start or end
+    // null when infinity
     private start: number | null;
     private end: number | null;
-    // null when this path is not a branch of a different path
+    // null when this path is not a branch of a different path -> orphan
     private parent_path: TimePath | null;
     private start_in_parent: number | null;
     // gets defined in tie_up if necessary
     private parent_time_stamp: TimeStamp | null = null;
-    private child_paths: TimePath[] = [];
+    // null when not calculated yet
+    private child_paths: TimePath[] | null = null;
     // sorted at all time
     private time_stamps: TimeStamp[] = [];
 
-    ////////////
-    // render //
-    ////////////
-    // relative to origin of parent path or global origin if root path
-    // <- for this path and all children
+    // location of this path and all children
     path_y: number | null = null;
-    // location of main path relative to this path's origin
+    // location of main path only
     main_path_y: number | null = null;
 
     constructor(
@@ -43,10 +40,8 @@ export class TimePath {
         this.start_in_parent =
             start_in_parent === null ? start : start_in_parent;
 
-        if (parent_path !== null) {
-            if (start === null)
-                throw new Error(`branched time path '${label}' needs a start`);
-        }
+        if (parent_path !== null && start === null)
+            throw new Error(`branched time path '${label}' needs a start`);
     }
 
     get_label(): string {
@@ -72,6 +67,8 @@ export class TimePath {
         return this.parent_time_stamp;
     }
     get_child_paths(): TimePath[] {
+        if (this.child_paths === null)
+            throw new Error(`child_paths of path '${this.label}' is null`);
         return this.child_paths;
     }
     // relative to origin of parent path or global origin if root path
@@ -142,6 +139,8 @@ export class TimePath {
         // move line
         if (this.main_path_y === null)
             throw new Error(`start_y of '${this.label}' is null`);
+        if (this.child_paths === null)
+            throw new Error(`child_paths of '${this.label}' is null`);
         if (go_up)
             this.main_path_y -= amount;
         else
@@ -179,7 +178,7 @@ export class TimePath {
         this.child_paths = [];
         let idx = 0;
         for (let time_stamp of this.time_stamps)
-            for (let child_path of time_stamp.get_children_paths()) {
+            for (let child_path of time_stamp.get_child_paths()) {
                 if (idx % 2) {
                     if (go_up) {
                         // start at bottom and go up

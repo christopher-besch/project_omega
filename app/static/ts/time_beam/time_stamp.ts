@@ -2,7 +2,7 @@ import { TimePath } from "./time_path.js";
 
 export class TimeStamp {
     private label: string;
-    private time_path: TimePath;
+    private path: TimePath;
     // in seconds
     private start: number;
     private end: number;
@@ -14,7 +14,7 @@ export class TimeStamp {
         if (end < start) throw new Error(`end of time stamp '${label}' can't be before start`);
         this.start = start;
         this.end = end;
-        this.time_path = time_path;
+        this.path = time_path;
         time_path.add_time_stamp(this);
     }
 
@@ -30,11 +30,11 @@ export class TimeStamp {
     no_width(): boolean {
         return this.start == this.end;
     }
-    get_children_paths(): TimePath[] {
+    get_child_paths(): TimePath[] {
         return this.children_paths;
     }
-    get_time_path(): TimePath {
-        return this.time_path;
+    get_path(): TimePath {
+        return this.path;
     }
 
     add_child_path(time_path: TimePath): void {

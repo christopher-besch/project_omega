@@ -5,7 +5,7 @@ function print_full_path(time_paths) {
         console.log(`${">".repeat(intends)} location: ${path.get_path_y()}`);
         console.log(`${">".repeat(intends)} main_path location: ${path.get_main_path_y()}`);
         if (path.is_child()) {
-            console.log(`${">".repeat(intends)} connect_to: ${(_a = path.get_parent_time_stamp()) === null || _a === void 0 ? void 0 : _a.get_time_path().get_main_path_y()}`);
+            console.log(`${">".repeat(intends)} connect_to: ${(_a = path.get_parent_time_stamp()) === null || _a === void 0 ? void 0 : _a.get_path().get_main_path_y()}`);
         }
         for (let child of path.get_child_paths())
             print_path(child, ++intends);

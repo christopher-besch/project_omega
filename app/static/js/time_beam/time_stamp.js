@@ -7,7 +7,7 @@ export class TimeStamp {
             throw new Error(`end of time stamp '${label}' can't be before start`);
         this.start = start;
         this.end = end;
-        this.time_path = time_path;
+        this.path = time_path;
         time_path.add_time_stamp(this);
     }
     get_label() {
@@ -22,11 +22,11 @@ export class TimeStamp {
     no_width() {
         return this.start == this.end;
     }
-    get_children_paths() {
+    get_child_paths() {
         return this.children_paths;
     }
-    get_time_path() {
-        return this.time_path;
+    get_path() {
+        return this.path;
     }
     add_child_path(time_path) {
         this.children_paths.push(time_path);

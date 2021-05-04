@@ -2,16 +2,13 @@ export class TimePath {
     constructor(label, start = null, end = null, parent_path = null, start_in_parent = null) {
         // gets defined in tie_up if necessary
         this.parent_time_stamp = null;
-        this.child_paths = [];
+        // null when not calculated yet
+        this.child_paths = null;
         // sorted at all time
         this.time_stamps = [];
-        ////////////
-        // render //
-        ////////////
-        // relative to origin of parent path or global origin if root path
-        // <- for this path and all children
+        // location of this path and all children
         this.path_y = null;
-        // location of main path relative to this path's origin
+        // location of main path only
         this.main_path_y = null;
         this.label = label;
         if (start !== null && end !== null && end < start)
@@ -22,10 +19,8 @@ export class TimePath {
         // no time jump if null
         this.start_in_parent =
             start_in_parent === null ? start : start_in_parent;
-        if (parent_path !== null) {
-            if (start === null)
-                throw new Error(`branched time path '${label}' needs a start`);
-        }
+        if (parent_path !== null && start === null)
+            throw new Error(`branched time path '${label}' needs a start`);
     }
     get_label() {
         return this.label;
@@ -48,6 +43,8 @@ export class TimePath {
         return this.parent_time_stamp;
     }
     get_child_paths() {
+        if (this.child_paths === null)
+            throw new Error(`child_paths of path '${this.label}' is null`);
         return this.child_paths;
     }
     // relative to origin of parent path or global origin if root path
@@ -104,6 +101,8 @@ export class TimePath {
         // move line
         if (this.main_path_y === null)
             throw new Error(`start_y of '${this.label}' is null`);
+        if (this.child_paths === null)
+            throw new Error(`child_paths of '${this.label}' is null`);
         if (go_up)
             this.main_path_y -= amount;
         else
@@ -136,7 +135,7 @@ export class TimePath {
         this.child_paths = [];
         let idx = 0;
         for (let time_stamp of this.time_stamps)
-            for (let child_path of time_stamp.get_children_paths()) {
+            for (let child_path of time_stamp.get_child_paths()) {
                 if (idx % 2) {
                     if (go_up) {
                         // start at bottom and go up
