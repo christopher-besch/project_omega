@@ -53,6 +53,8 @@ const input_json: string = `
 // print_full_path(root_time_paths);
 
 let camera = new Camera(0, 100, 100, 0, "time-beam-canvas");
-let line = new Line(20, 0, 20, 50, true, false);
-let animation = new Animation(camera, [line]);
+let animation = new Animation(camera, [
+    new Line(20, 0, 20, 50, false, false),
+    new Line(20, 0, 20, 50, false, true)
+]);
 animation.init();

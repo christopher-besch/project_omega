@@ -4,42 +4,44 @@ export class RenderObject {
     update(frame_time_delta) { }
 }
 export class Line extends RenderObject {
-    // left_inf extends x1 and y1, right_inf x2 and y2 beyond visible area
-    constructor(x1, x2, y1, y2, left_inf, right_inf) {
+    // first_inf extends x1 and y1, second_inf x2 and y2 beyond visible area
+    constructor(x1, x2, y1, y2, first_inf, second_inf) {
         super();
         this.x1 = x1;
         this.x2 = x2;
         this.y1 = y1;
         this.y2 = y2;
-        this.left_inf = left_inf;
-        this.right_inf = right_inf;
+        this.first_inf = first_inf;
+        this.seconds_inf = second_inf;
     }
     draw(camera) {
+        // should be moved in own function
         let used_x1 = this.x1;
         let used_x2 = this.x2;
         let used_y1 = this.y1;
         let used_y2 = this.y2;
         let delta_x = used_x2 - used_x1;
         let delta_y = used_y2 - used_y1;
-        if (this.left_inf) {
-            used_x1 = camera.get_left_bound();
+        if (this.first_inf) {
             // don't divide by 0 <- vertical line
             if (delta_x == 0) {
-                used_y1 = camera.get_upper_bound();
+                // keep x-location
+                used_y1 = this.y1 < this.y2 ? camera.get_upper_bound() : camera.get_lower_bound();
             }
             else {
-                // get intersection point with left boundary
+                // get intersection point with left or right boundary
+                used_x1 = this.x1 < this.x2 ? camera.get_left_bound() : camera.get_right_bound();
                 used_y1 = (delta_y / delta_x) * used_x1;
             }
         }
         // get intersection point with right boundary
-        if (this.right_inf) {
-            used_x2 = camera.get_right_bound();
+        if (this.seconds_inf) {
             if (delta_x == 0) {
-                // return vertical line
-                used_y2 = camera.get_lower_bound();
+                // return vertical line -> keep x-location
+                used_y2 = this.y1 < this.y2 ? camera.get_upper_bound() : camera.get_lower_bound();
             }
             else {
+                used_x2 = this.x1 < this.x2 ? camera.get_left_bound() : camera.get_right_bound();
                 // get intersection point with right boundary
                 used_y2 = (delta_y / delta_x) * used_x2;
             }
