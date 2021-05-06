@@ -1,15 +1,15 @@
+import { Vec2 } from "./vec2.js";
+
 export class Camera {
-    private left_bound: number;
-    private right_bound: number;
-    private lower_bound: number;
-    private upper_bound: number;
-
-    private scale_x: number;
-    private scale_y: number;
-
     private ctx: CanvasRenderingContext2D;
+    private top_left: Vec2;
+    private bottom_right: Vec2;
 
-    constructor(left_bound: number, right_bound: number, lower_bound: number, upper_bound: number, canvas_id: string) {
+    private scale: Vec2;
+    private diagonal: number;
+
+
+    constructor(canvas_id: string, left_bound: number, right_bound: number, lower_bound: number, upper_bound: number) {
         if (left_bound > right_bound)
             throw new Error("left_bound can't be bigger than right_bound");
         if (lower_bound < upper_bound)
@@ -21,21 +21,26 @@ export class Camera {
         canvas.height = canvas.scrollHeight;
         this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-        this.left_bound = left_bound;
-        this.right_bound = right_bound;
-        this.lower_bound = lower_bound;
-        this.upper_bound = upper_bound;
+        this.top_left = new Vec2(left_bound, upper_bound);
+        this.bottom_right = new Vec2(right_bound, lower_bound);
 
         this.scale_x = this.ctx.canvas.width / (right_bound - left_bound);
         this.scale_y = this.ctx.canvas.height / (lower_bound - upper_bound);
+        this.diagonal = thiu;
     }
 
-    get_left_bound(): number { return this.left_bound; }
-    get_right_bound(): number { return this.right_bound; }
-    get_lower_bound(): number { return this.lower_bound; }
-    get_upper_bound(): number { return this.upper_bound; }
     get_ctx(): CanvasRenderingContext2D { return this.ctx; }
+    get_left_bound(): number { return this.top_left.x; }
+    get_right_bound(): number { return this.bottom_right.x; }
+    get_lower_bound(): number { return this.top_left.y; }
+    get_upper_bound(): number { return this.bottom_right.y; }
 
+    private calculate(): void {
+        this.scale = new Vec2(this.ctx.canvas.width / (right_bound - left_bound));
+        this.scale_x = this.ctx.canvas.width / (right_bound - left_bound);
+        this.scale_y = this.ctx.canvas.height / (lower_bound - upper_bound);
+        this.diagonal = Math.sqrt();
+    }
     // todo: fix
     is_viewable(left_bound: number, right_bound: number, lower_bound: number, upper_bound: number): boolean {
         return true;
