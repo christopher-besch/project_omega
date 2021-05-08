@@ -26,6 +26,7 @@
 -   psycopg2-binary
 -   markdown
 -   pyjwt
+-   gunicorn
 
 ## commands
 
