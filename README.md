@@ -9,6 +9,7 @@
 -   install dependencies
 -   `python3 setup.py > .env`
 -   `flask db upgrade`
+-   `python3 create_admin.py`
 
 ## Requirements
 
