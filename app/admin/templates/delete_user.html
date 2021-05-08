@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block scripts %}
-<ajax_url id="confirm-delete" url="{{ url_for('admin.confirm_delete_user') }}" />
+<ajax_url id="confirm-delete" url="{{ url_for('admin.confirm_delete_user') }}" csrf_token="{{ csrf_token() }}" />
 
 <script src="{{ url_for('static', filename='js/delete.js') }}"></script>
 {% endblock %}

@@ -78,8 +78,8 @@
 {% endblock %}
 
 {% block scripts %}
-<ajax_url id="set-admin" url="{{ url_for('admin.set_admin') }}" />
-<ajax_url id="set-author" url="{{ url_for('admin.set_author') }}" />
+<ajax_url id="set-admin" url="{{ url_for('admin.set_admin') }}" csrf_token="{{ csrf_token() }}" />
+<ajax_url id="set-author" url="{{ url_for('admin.set_author') }}" csrf_token="{{ csrf_token() }}" />
 
 <script src="{{ url_for('static', filename='js/users.js') }}"></script>
 {% endblock %}

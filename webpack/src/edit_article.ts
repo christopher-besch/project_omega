@@ -12,13 +12,13 @@ document.body.onload = () => {
     add_button_links();
 
     add_button_listener("toggle-unlisted", (b) => {
-        let internal_name = b.dataset.internal_name as string;
+        let internal_name = b.dataset.internal_name!;
         toggle_button(b, ajax_urls["set-unlisted"], { internal_name }, (resp): void => { });
     });
 
     add_button_listener("toggle-author", (b) => {
-        let username = b.dataset.username as string;
-        let internal_name = b.dataset.internal_name as string;
+        let username = b.dataset.username!;
+        let internal_name = b.dataset.internal_name!;
         toggle_button(b, ajax_urls["set-author"], { username, internal_name }, (resp): void => {
             set_logo("is-author", username, resp.status);
         });

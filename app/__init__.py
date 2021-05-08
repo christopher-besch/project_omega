@@ -7,6 +7,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
+from flask_wtf import CSRFProtect
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
@@ -14,6 +15,7 @@ from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
+csrf = CSRFProtect()
 login = LoginManager()
 login.login_view = "auth.login"
 login.login_message = "You need to be logged in to access this page."
@@ -26,6 +28,7 @@ def create_app(config_class=Config) -> Flask:
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
+    csrf.init_app(app)
 
     # blueprints
     from app.errors import bp as errors_bp

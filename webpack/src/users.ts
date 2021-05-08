@@ -12,13 +12,13 @@ document.body.onload = () => {
     add_button_links();
 
     add_button_listener("toggle-admin", (b) => {
-        let username = b.dataset.username as string;
+        let username = b.dataset.username!;
         toggle_button(b, ajax_urls["set-admin"], { username }, (resp): void => {
             set_logo("is-admin", username, resp.status);
         });
     });
     add_button_listener("toggle-author", (b) => {
-        let username = b.dataset.username as string;
+        let username = b.dataset.username!;
         toggle_button(b, ajax_urls["set-author"], { username }, (resp): void => {
             set_logo("is-author", username, resp.status);
             // for when changing own author status

@@ -7,30 +7,41 @@ declare var moment: any;
 // represent one endpoint the client can talk to
 export class AjaxAddress {
     private url: string;
+    private csrf_token: string;
+
     constructor(name: string) {
         // load urls from html
-        let obj = document.getElementById(name) as HTMLElement;
-        this.url = obj.getAttribute("url") as string;
+        let obj = document.getElementById(name)!;
+        this.url = obj.getAttribute("url")!;
+        this.csrf_token = obj.getAttribute("csrf_token")!;
     }
 
-    send(msg: any, callback: { (response: any, success: boolean): void }, async = true): void {
+    send(msg: any, callback: { (response: any, success: boolean): void; }, async = true): void {
         let request = new XMLHttpRequest();
         // set callback
         request.onreadystatechange = function () {
             // when a response has been received
-            if (request.readyState == 4)
+            if (request.readyState == 4) {
+                try {
+                    let response: any = JSON.parse(request.responseText);
+                } catch (error) {
+                    callback("failure", false);
+                    return;
+                }
                 callback(JSON.parse(request.responseText), request.status === 200);
+            }
         };
         // send request
         request.open("POST", this.url, async);
         request.setRequestHeader("Content-Type", "application/json");
+        request.setRequestHeader("X-CSRFToken", this.csrf_token);
         request.send(JSON.stringify(msg));
     }
 }
 
 // return dictionary with required urls
-export function get_ajax_urls(names: string[]): { [name: string]: AjaxAddress } {
-    let ajax_urls: { [name: string]: AjaxAddress } = {};
+export function get_ajax_urls(names: string[]): { [name: string]: AjaxAddress; } {
+    let ajax_urls: { [name: string]: AjaxAddress; } = {};
     for (let name of names) ajax_urls[name] = new AjaxAddress(name);
     return ajax_urls;
 }
@@ -42,7 +53,7 @@ export function get_ajax_urls(names: string[]): { [name: string]: AjaxAddress } 
 // add click listener to buttons of <button_class>
 export function add_button_listener(
     class_name: string,
-    callback: { (button: HTMLButtonElement): void }
+    callback: { (button: HTMLButtonElement): void; }
 ): void {
     let buttons = document.getElementsByClassName(
         class_name
@@ -77,12 +88,12 @@ export function toggle_button(
     button: HTMLButtonElement,
     ajax_address: AjaxAddress,
     msg: any,
-    resp_callback: { (response: any): void }
+    resp_callback: { (response: any): void; }
 ): void {
     // load from html
-    let current_status: boolean = JSON.parse(button.dataset.status as string);
-    let true_text = button.dataset.trueText as string;
-    let false_text = button.dataset.falseText as string;
+    let current_status: boolean = JSON.parse(button.dataset.status!);
+    let true_text = button.dataset.trueText!;
+    let false_text = button.dataset.falseText!;
     msg.status = !current_status;
 
     ajax_address.send(msg, (resp, success) => {
@@ -101,7 +112,7 @@ export function toggle_button(
 // like anchor with href
 export function add_button_links(): void {
     add_button_listener("button-link", (b) => {
-        window.location.assign(b.dataset.url as string);
+        window.location.assign(b.dataset.url!);
     });
 }
 
@@ -123,7 +134,7 @@ export function add_moments(): void {
     ) as HTMLCollectionOf<HTMLElement>;
     for (let moment_element of moment_elements) {
         let this_moment = moment.utc(
-            moment_element.dataset.time as string,
+            moment_element.dataset.time!,
             "YYYY-MM-DD HH:mm:ss.SSS"
         );
         moment_element.innerText = this_moment.fromNow();
