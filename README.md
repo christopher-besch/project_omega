@@ -23,6 +23,7 @@
 -   email_validator
 -   psycopg2-binary
 -   markdown
+-   pyjwt
 
 ## commands
 

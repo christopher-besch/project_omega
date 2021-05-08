@@ -6,11 +6,21 @@
 - resources
 - used extras
 #}
-
-<h1>Edit <a href="{{ url_for('main.article', internal_name=article.internal_name) }}">{{ article.title }}</a></h1>
+<h1>Edit <a
+        href="{{ url_for('main.article', internal_name=article.internal_name, token=article.gen_auth_token()) if article.unlisted else url_for('main.article', internal_name=article.internal_name) }}">{{
+        article.title }}</a></h1>
 <hr>
 
-<form action="" method="post">
+{% with %}
+{% set class="btn-danger toggle-unlisted" %}
+{% set status=article.unlisted %}
+{% set true_text="List Article" %}
+{% set false_text="Unlist Article" %}
+{% set data={"internal_name": article.internal_name} %}
+{% include "_toggle_button.html" %}
+{% endwith %}
+
+<form action="" method=" post">
     {{ metadata_form.hidden_tag() }}
 
     {% with %}
@@ -98,6 +108,7 @@
 {% endblock %}
 
 {% block scripts %}
+<ajax_url id="set-unlisted" url="{{ url_for('main.set_unlisted') }}" />
 <ajax_url id="set-author" url="{{ url_for('main.set_author') }}" />
 
 <script type="module" src="{{ url_for('static', filename='js/edit_article.js') }}"></script>

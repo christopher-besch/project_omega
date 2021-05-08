@@ -3,7 +3,7 @@
 {% block content %}
 <h1>{{ article.title }}</h1>
 {% if article.subtitle %}<h3>{{ article.subtitle }}</h3>{% endif %}
-<i>By {{ article.get_authors() }}</i><br />
+<i>{% if article.unlisted %}unlisted {% endif %}By {{ article.get_authors() }}</i><br />
 {% if article.allow_access() %}
 <a href="{{ url_for('main.edit_article', internal_name=article.internal_name) }}">edit this article</a>
 {% endif %}

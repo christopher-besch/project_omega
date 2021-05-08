@@ -23,8 +23,18 @@ def index():
 @bp.route("/articles")
 def articles():
     page = request.args.get("page", 1, type=int)
-    articles = Article.query.order_by(Article.created_on.desc()).paginate(
-        page, current_app.config["ARTICLES_PER_PAGE"], False)
+    # only listed articles for not logged in
+    if not current_user.is_authenticated:
+        articles = Article.query.filter(Article.unlisted == False).order_by(Article.created_on.desc()).paginate(
+            page, current_app.config["ARTICLES_PER_PAGE"], False)
+    # admins can see everything
+    elif current_user.is_admin:
+        articles = Article.query.order_by(Article.created_on.desc()).paginate(
+            page, current_app.config["ARTICLES_PER_PAGE"], False)
+    # listed and own articles for logged in
+    else:
+        articles = Article.query.filter(Article.unlisted == False or Article.authors.any(id=current_user.id)).order_by(Article.created_on.desc()).paginate(
+            page, current_app.config["ARTICLES_PER_PAGE"], False)
     prev_url = url_for(
         "main.articles", page=articles.prev_num) if articles.has_prev else None
     next_url = url_for(
@@ -36,6 +46,8 @@ def articles():
 def article(internal_name: str):
     article = Article.query.filter_by(
         internal_name=internal_name).first_or_404()
+    if article.unlisted:
+        article.check_auth_token(request.args.get("token"))
     return render_template("article.html", article=article, title=article.title)
 
 
@@ -117,6 +129,7 @@ def edit_article(internal_name: str):
                            title=f"Edit {article.title}")
 
 
+# ajax
 # add or remove this user as author from this article
 @bp.route("/set_author", methods=["POST"])
 @login_required
@@ -128,7 +141,7 @@ def set_author():
         internal_name=internal_name).first()
     user = User.query.filter_by(username=username).first()
     edit_access_required(article)
-    if article and user:
+    if user:
         if status:
             article.add_authors(user)
         else:
@@ -137,6 +150,19 @@ def set_author():
         db.session.commit()
         return jsonify({"success": True, "status": status})
     return jsonify({"success": False})
+
+
+# ajax
+@bp.route("/set_unlisted", methods=["POST"])
+@login_required
+def set_unlisted():
+    internal_name: str = request.json["internal_name"]
+    status: bool = request.json["status"]
+    article = Article.query.filter_by(internal_name=internal_name).first()
+    edit_access_required(article)
+    article.unlisted = status
+    db.session.commit()
+    return jsonify({"success": True, "status": status})
 
 
 # delete article

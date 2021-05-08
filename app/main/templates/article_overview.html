@@ -7,12 +7,14 @@
 <div class="card mb-3">
     <!-- <img src="https://mdbootstrap.com/img/new/slides/041.jpg" class="card-img-top" alt="..." /> -->
     <div class="card-body">
-        <a href="{{ url_for('main.article', internal_name=article.internal_name) }}">
+        <a
+            href="{{ url_for('main.article', internal_name=article.internal_name, token=article.gen_auth_token()) if article.unlisted else url_for('main.article', internal_name=article.internal_name) }}">
             <h5 class="card-title">{{ article.title }}</h5>
         </a>
         {% if article.subtitle %}<h5 class="card-subtitle">{{ article.subtitle }}</h5>{% endif %}
         <p class="card-text">
             <small class="text-muted">
+                {% if article.unlisted %}unlisted{% endif %}
                 By {{ article.get_authors() }}<br />
                 Created <span class="moment-from-now default-inline" data-time="{{ article.created_on }}"></span><br />
                 Last modified <span class="moment-from-now default-inline"

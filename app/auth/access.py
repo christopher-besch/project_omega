@@ -12,6 +12,8 @@ def author_required() -> None:
 
 # admin or author of specific article
 def edit_access_required(article: Article) -> None:
+    if not article:
+        abort(404)
     if not article.allow_access():
         abort(401)
 

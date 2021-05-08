@@ -1,9 +1,38 @@
-from datetime import date, datetime
-from flask_login import current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
-from app import db, login
+from datetime import date, datetime, timedelta
+
+import jwt
 import markdown
+from flask import abort, current_app
+from flask_login import UserMixin, current_user
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app import db, login
+
+
+# token support
+def encode_auth_token(id: str) -> bytes:
+    payload = {
+        "exp": datetime.utcnow() + timedelta(days=1000000),
+        "iat": datetime.utcnow(),
+        "sub": id
+    }
+    return jwt.encode(
+        payload,
+        current_app.config.get("SECRET_KEY"),
+        algorithm="HS256"
+    )
+
+
+def decode_auth_token(auth_token: bytes) -> str:
+    try:
+        payload = jwt.decode(auth_token, current_app.config.get(
+            "SECRET_KEY"), algorithms=["HS256"])
+        return payload["sub"]
+    except jwt.ExpiredSignatureError:
+        return abort(401)
+    except jwt.InvalidTokenError:
+        return abort(401)
+
 
 # relationships:
 # user     many-to-many article
@@ -55,6 +84,10 @@ class User(UserMixin, db.Model):
         self.is_admin = status
 
     def change_author_status(self, status: bool) -> None:
+        # remove all author rights
+        if not status:
+            for article in self.articles:
+                article.rm_author(self)
         self.is_author = status
 
     # passwords
@@ -77,6 +110,8 @@ class Article(db.Model):
     last_modified = db.Column(db.DateTime, default=datetime.utcnow)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
 
+    unlisted = db.Column(db.Boolean, default=True)
+
     # data
     source = db.Column(db.String(1000000))
     html = db.Column(db.String(1000000))
@@ -96,6 +131,15 @@ class Article(db.Model):
         cascade="all, delete-orphan"
     )
 
+    def gen_auth_token(self) -> str:
+        return encode_auth_token(self.internal_name)
+
+    def check_auth_token(self, token: str) -> None:
+        # already checks if token has valid format
+        if decode_auth_token(token) != self.internal_name:
+            # when id is wrong
+            abort(401)
+
     def modify(self) -> None:
         self.last_modified = datetime.utcnow()
 
@@ -103,6 +147,8 @@ class Article(db.Model):
         self.html = markdown.markdown(self.source, extensions=["extra"])
 
     def get_authors(self) -> str:
+        if len(self.authors) == 0:
+            return "Unknown"
         authors = ""
         for idx, author in enumerate(self.authors):
             authors += author.full_name
