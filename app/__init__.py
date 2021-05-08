@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional, Tuple
 import os
+import shutil
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -76,9 +77,11 @@ def create_app(config_class=Config) -> Flask:
             app.logger.setLevel(logging.INFO)
             app.logger.info("Project Omega startup")
     
-    # create temp folder
-    if not os.path.exists(app.config["UPLOAD_FOLDER"]):
-        os.makedirs(app.config["UPLOAD_FOLDER"])
+    # clear and create temp folder
+    if os.path.exists(app.config["UPLOAD_FOLDER"]):
+        print("deleting temp files")
+        shutil.rmtree(app.config["UPLOAD_FOLDER"])
+    os.makedirs(app.config["UPLOAD_FOLDER"])
     
     # update last seen
     @app.before_request

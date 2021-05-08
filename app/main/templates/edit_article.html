@@ -19,8 +19,9 @@
 {% set data={"internal_name": article.internal_name} %}
 {% include "_toggle_button.html" %}
 {% endwith %}
+<hr>
 
-<form action="" method=" post">
+<form action="" method="post">
     {{ metadata_form.hidden_tag() }}
 
     {% with %}
@@ -84,6 +85,19 @@
 {% set address_options={ "internal_name": article.internal_name } %}
 {% include "_pagination_links.html" %}
 {% endwith %}
+<hr>
+
+{# resources control #}
+<form action="" method="post" enctype="multipart/form-data">
+    {{ upload_resources_form.hidden_tag() }}
+
+    {% with %}
+    {% set form_element = upload_resources_form.resources %}
+    {% set multiple = True %}
+    {% include "_file_input.html" %}
+    {% endwith %}
+    <button type="submit" class="btn btn-primary">Upload New Resources</button>
+</form>
 <hr>
 
 {# source update #}

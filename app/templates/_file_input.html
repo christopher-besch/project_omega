@@ -1,8 +1,9 @@
-{# required: form_element: FileField #}
+{# required: form_element: FileField
+optional: multiple: bool #}
 <div class="form-group">
     <label for="{{ form_element.id }}-form">{{ form_element.label.text }}</label>
     <input type="file" class="form-control-file {% if form_element.errors|length != 0 %}is-invalid{% endif %}"
-        id="{{ form_element.id }}-form" name="{{ form_element.id }}" required>
+        id="{{ form_element.id }}-form" name="{{ form_element.id }}" required {{ "multiple='true'" if multiple }}>
     {% for error in form_element.errors %}
     <div class="invalid-feedback">{{ error }}</div>
     {% endfor %}

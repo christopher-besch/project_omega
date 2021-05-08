@@ -2,7 +2,7 @@ from datetime import date, datetime, timedelta
 
 import jwt
 import markdown
-from flask import abort, current_app
+from flask import abort, current_app, flash
 from flask_login import UserMixin, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -59,19 +59,20 @@ class User(UserMixin, db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     # login
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
+    username = db.Column(db.String(64), index=True,
+                         unique=True, nullable=False)
+    email = db.Column(db.String(120), index=True, unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
 
     # data
-    full_name = db.Column(db.String(120))
-    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    full_name = db.Column(db.String(120), nullable=False)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     # flags
-    is_admin = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     # role flags
-    is_admin = db.Column(db.Boolean, default=False)
-    is_author = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    is_author = db.Column(db.Boolean, default=False, nullable=False)
 
     # many articles
     articles = db.relationship(
@@ -104,13 +105,16 @@ class User(UserMixin, db.Model):
 class Article(db.Model):
     __tablename__ = "article"
     id = db.Column(db.Integer, primary_key=True)
-    internal_name = db.Column(db.String(64), index=True, unique=True)
-    title = db.Column(db.String(64))
+    internal_name = db.Column(
+        db.String(64), index=True, unique=True, nullable=False)
+    title = db.Column(db.String(64), nullable=False)
     subtitle = db.Column(db.String(64))
-    last_modified = db.Column(db.DateTime, default=datetime.utcnow)
-    created_on = db.Column(db.DateTime, default=datetime.utcnow)
+    last_modified = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=False)
+    created_on = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=False)
 
-    unlisted = db.Column(db.Boolean, default=True)
+    unlisted = db.Column(db.Boolean, default=True, nullable=False)
 
     # data
     source = db.Column(db.String(1000000))
@@ -121,6 +125,14 @@ class Article(db.Model):
         "User",
         secondary=user_article_association,
         back_populates="articles"
+    )
+
+    # many resources
+    # resources get deleted when not referenced anymore
+    resources = db.relationship(
+        "Resource",
+        back_populates="article",
+        cascade="all, delete-orphan"
     )
 
     # many citations
@@ -177,6 +189,19 @@ class Article(db.Model):
     def is_author(self, author: "User") -> bool:
         return author in self.authors
 
+    # resource control
+    def add_resources(self, *resources: "Resource") -> None:
+        for resource in resources:
+            if not self.is_resource(resource):
+                self.resources.append(resource)
+
+    def rm_resource(self, resource: "Resource") -> None:
+        if self.is_recourse(resource):
+            self.resources.remove(resource)
+
+    def is_resource(self, resource: "Resource") -> bool:
+        return resource in self.resources
+
     # citation control
     def add_citations(self, *citations: "Citation") -> None:
         for citation in citations:
@@ -192,6 +217,22 @@ class Article(db.Model):
 
     def __repr__(self):
         return f"<Article {self.internal_name}>"
+
+
+# represent dynamic resource
+class Resource(db.Model):
+    __tablename__ = "resource"
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(64), nullable=False)
+    mimetype = db.Column(db.String(64), nullable=False)
+    data = db.Column(db.LargeBinary(20000000), nullable=False)
+
+    # one article this resource belongs to
+    article_id = db.Column(db.Integer, db.ForeignKey("article.id"))
+    article = db.relationship("Article", back_populates="resources")
+
+    def __repr__(self) -> str:
+        return f"<Resource '{self.filename}' of {str(self.article)}>"
 
 
 # represent edge between a single article and source

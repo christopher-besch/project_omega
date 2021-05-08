@@ -1,7 +1,7 @@
 from app.models import Article
 from app.validators import validate_internal_name
 from flask_wtf import FlaskForm
-from wtforms import FileField, StringField
+from wtforms import FileField, StringField, MultipleFileField
 from wtforms.validators import DataRequired
 
 
@@ -18,6 +18,11 @@ class CreateArticleForm(FlaskForm):
 
 class UpdateArticleSourceForm(FlaskForm):
     source = FileField("Source Upload", validators=[DataRequired()])
+
+
+class UploadResourcesForm(FlaskForm):
+    resources = MultipleFileField(
+        "Resources Upload")
 
 
 class MetaDataForm(FlaskForm):

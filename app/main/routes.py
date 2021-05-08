@@ -5,9 +5,9 @@ from app import db
 from app.auth.access import author_required, edit_access_required
 from app.main import bp
 from app.main.forms import (CreateArticleForm, MetaDataForm,
-                            UpdateArticleSourceForm)
-from app.models import Article, User
-from flask import (abort, current_app, flash, jsonify, redirect,
+                            UpdateArticleSourceForm, UploadResourcesForm)
+from app.models import Article, Resource, User
+from flask import (abort, current_app, flash, jsonify, make_response, redirect,
                    render_template, request, url_for)
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
@@ -51,6 +51,20 @@ def article(internal_name: str):
     return render_template("article.html", article=article, title=article.title)
 
 
+@bp.route("/article_data/<internal_name>/<filename>")
+def article_data(internal_name: str, filename: str):
+    article = Article.query.filter_by(
+        internal_name=internal_name).first_or_404()
+    # token required when unlisted
+    if article.unlisted:
+        article.check_auth_token(request.args.get("token"))
+    resource = Resource.query.filter(
+        Resource.filename == filename and Resource.article == article).first_or_404()
+    response = make_response(resource.data)
+    response.headers.set("Content-Type", resource.mimetype)
+    return response
+
+
 @bp.route("/create_article", methods=["GET", "POST"])
 @login_required
 def create_article():
@@ -82,8 +96,9 @@ def edit_article(internal_name: str):
         internal_name=internal_name).first_or_404()
     edit_access_required(article)
 
-    update_source_form = UpdateArticleSourceForm()
     metadata_form = MetaDataForm()
+    upload_resources_form = UploadResourcesForm()
+    update_source_form = UpdateArticleSourceForm()
     # load old data if not filled with new
     # got metadata form
     if "title" not in request.form:
@@ -91,12 +106,35 @@ def edit_article(internal_name: str):
         metadata_form.subtitle.data = article.subtitle
 
     # save changes
-    if "title" in request.form:
+    if "title" in request.form and metadata_form.validate_on_submit():
         article.title = metadata_form.title.data
         article.subtitle = metadata_form.subtitle.data
         article.modify()
         db.session.commit()
         flash("The metadata has been updated.", "info")
+        return redirect(request.url)
+
+    if "resources" in request.files:
+        files = request.files.getlist("resources")
+        for file in files:
+            filename = secure_filename(file.filename)
+            # no doubled filenames
+            if any(resource.filename == filename for resource in article.resources):
+                flash("doubled filenames", "error")
+                return redirect(request.url)
+            # temporarily save upload
+            file.save(os.path.join(
+                current_app.config["UPLOAD_FOLDER"], filename))
+            file.seek(0)
+            data = file.read()
+            mimetype = file.content_type
+            resource = Resource(filename=filename,
+                                mimetype=mimetype, data=data)
+            db.session.add(resource)
+            article.add_resources(resource)
+        db.session.commit()
+        flash("The new resources have been uploaded.", "info")
+        return redirect(request.url)
 
     if "source" in request.files and update_source_form.validate_on_submit():
         # temporarily save uploaded file
@@ -112,6 +150,7 @@ def edit_article(internal_name: str):
         article.modify()
         db.session.commit()
         flash("The source has been updated.", "info")
+        return redirect(request.url)
 
     page = request.args.get("page", 1, type=int)
     # get all authors
@@ -124,7 +163,7 @@ def edit_article(internal_name: str):
     next_url = url_for(
         "main.edit_article", internal_name=internal_name, page=users.next_num) if users.has_next else None
     return render_template("edit_article.html",
-                           article=article, users=users.items, metadata_form=metadata_form, update_source_form=update_source_form,
+                           article=article, users=users.items, metadata_form=metadata_form, upload_resources_form=upload_resources_form, update_source_form=update_source_form,
                            prev_url=prev_url, next_url=next_url, amount_pages=users.pages,
                            title=f"Edit {article.title}")
 
