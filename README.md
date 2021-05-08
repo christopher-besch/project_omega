@@ -8,6 +8,7 @@
 <!-- -   `pip install -r requirements.txt` -->
 -   install dependencies
 -   `python3 setup.py > .env`
+-   `flask db upgrade`
 
 ## Requirements
 
