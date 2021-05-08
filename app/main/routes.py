@@ -78,8 +78,19 @@ def create_article():
         source_file.save(os.path.join(
             current_app.config["UPLOAD_FOLDER"], filename))
         source_file.seek(0)
-        # read file and save new article
-        source = str(source_file.read(), "utf-8")
+
+        # check file type
+        mimetype: str = source_file.content_type
+        if not mimetype.startswith("text/"):
+            flash("Unsupported source file type, try a markdown file instead", "error")
+            return redirect(request.url)
+        try:
+            # read file and save new article
+            source = str(source_file.read(), "utf-8")
+        except UnicodeDecodeError:
+            flash("Unsupported source file type, try a markdown file instead", "error")
+            return redirect(request.url)
+
         article = Article(internal_name=form.internal_name.data,
                           title=form.title.data, source=source)
         article.compile()
@@ -144,8 +155,19 @@ def edit_article(internal_name: str):
         source_file.save(os.path.join(
             current_app.config["UPLOAD_FOLDER"], filename))
         source_file.seek(0)
-        # read file and save new article
-        source = str(source_file.read(), "utf-8")
+
+        # check file type
+        mimetype: str = source_file.content_type
+        if not mimetype.startswith("text/"):
+            flash("Unsupported source file type, try a markdown file instead", "error")
+            return redirect(request.url)
+        try:
+            # read file and save new article
+            source = str(source_file.read(), "utf-8")
+        except UnicodeDecodeError:
+            flash("Unsupported source file type, try a markdown file instead", "error")
+            return redirect(request.url)
+
         article.source = source
         article.compile()
         article.modify()
@@ -202,7 +224,7 @@ def set_unlisted():
     edit_access_required(article)
     article.unlisted = status
     db.session.commit()
-    return jsonify({"success": True, "status": status})
+    return jsonify({"success": True, "status": status, "reload_page": True})
 
 
 # delete article

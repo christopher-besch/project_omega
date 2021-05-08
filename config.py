@@ -8,8 +8,8 @@ load_dotenv(os.path.join(basedir, ".env"))
 
 class Config(object):
     # application settings
-    USERS_PER_PAGE = 3
-    ARTICLES_PER_PAGE = 3
+    USERS_PER_PAGE = 10
+    ARTICLES_PER_PAGE = 10
     MAX_CONTENT_PATH = 5000000
     UPLOAD_FOLDER = "./temp_files"
 

@@ -12,7 +12,7 @@ class CreateArticleForm(FlaskForm):
 
     # automatically used by wtforms
     # name already taken?
-    def validate_internal_name(self, internal_article_name: str) -> None:
+    def validate_internal_name(self, internal_article_name) -> None:
         validate_internal_name(internal_article_name.data)
 
 

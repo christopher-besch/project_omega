@@ -75,6 +75,10 @@
 {% include "_pagination_links.html" %}
 {% endwith %}
 
+<button type="button" class="btn btn-primary button-link" data-url="{{ url_for('admin.create_user') }}">
+    Create User
+</button>
+
 {% endblock %}
 
 {% block scripts %}

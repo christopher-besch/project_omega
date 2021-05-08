@@ -13,7 +13,13 @@ document.body.onload = () => {
 
     add_button_listener("toggle-unlisted", (b) => {
         let internal_name = b.dataset.internal_name!;
-        toggle_button(b, ajax_urls["set-unlisted"], { internal_name }, (resp): void => { });
+        toggle_button(b, ajax_urls["set-unlisted"], { internal_name }, (resp): void => {
+            // update links
+            if (resp.reload_page)
+                window.location.replace(
+                    window.location.pathname + window.location.search + window.location.hash
+                );
+        });
     });
 
     add_button_listener("toggle-author", (b) => {

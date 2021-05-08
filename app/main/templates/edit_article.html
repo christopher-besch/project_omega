@@ -8,7 +8,7 @@
 #}
 <h1>Edit <a
         href="{{ url_for('main.article', internal_name=article.internal_name, token=article.gen_auth_token()) if article.unlisted else url_for('main.article', internal_name=article.internal_name) }}">{{
-        article.title }}</a></h1>
+        article.title }} ({% if article.unlisted %}unlisted{% else %}listed{% endif %})</a></h1>
 <hr>
 
 {% with %}
@@ -88,7 +88,7 @@
 <hr>
 
 {# resources control #}
-<h3>Authors</h3>
+<h3>Resources</h3>
 <table class="table">
     <thead>
         <tr>
