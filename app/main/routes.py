@@ -51,6 +51,7 @@ def article(internal_name: str):
     return render_template("article.html", article=article, title=article.title)
 
 
+# serve dynamic files for articles
 @bp.route("/article_data/<internal_name>/<filename>")
 def article_data(internal_name: str, filename: str):
     article = Article.query.filter_by(
@@ -229,6 +230,36 @@ def confirm_delete_article():
         db.session.delete(article)
         db.session.commit()
         flash('{} has been deleted!'.format(article.internal_name), "info")
+        return jsonify({'success': True})
+    return jsonify({'success': False})
+
+
+# delete resource
+@bp.route('/delete_resource/<internal_name>/<filename>')
+@login_required
+def delete_resource(internal_name: str, filename: str):
+    article = Article.query.filter_by(
+        internal_name=internal_name).first()
+    edit_access_required(article)
+    if not article:
+        return redirect(url_for("main.articles"))
+    resource = Resource.query.filter(
+        Resource.filename == filename and Resource.article == article).first_or_404()
+    return render_template("delete_resource.html", resource=resource, title="Delete Article")
+
+
+# actually deleting resource
+# ajax
+@bp.route("/confirm_delete_resource", methods=["POST"])
+@login_required
+def confirm_delete_resource():
+    id = request.json["id"]
+    resource = Resource.query.filter_by(id=id).first()
+    if resource:
+        edit_access_required(resource.article)
+        db.session.delete(resource)
+        db.session.commit()
+        flash('{} has been deleted!'.format(resource.filename), "info")
         return jsonify({'success': True})
     return jsonify({'success': False})
 

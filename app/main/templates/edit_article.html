@@ -88,6 +88,39 @@
 <hr>
 
 {# resources control #}
+<h3>Authors</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Filename</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for resource in article.resources %}
+        <tr>
+            <td>
+                {% if article.unlisted %}
+                <a
+                    href="{{ url_for('main.article_data', internal_name=article.internal_name, filename=resource.filename, token=article.gen_auth_token()) }}">{{
+                    resource.filename }}</a>
+                {% else %}
+                <a
+                    href="{{ url_for('main.article_data', internal_name=article.internal_name, filename=resource.filename) }}">{{
+                    resource.filename }}</a>
+                {% endif %}
+            </td>
+
+            <td>
+                <button type="button" class="btn btn-danger button-link"
+                    data-url="{{ url_for('main.delete_resource', internal_name=article.internal_name, filename=resource.filename) }}">
+                    Delete Resource
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 <form action="" method="post" enctype="multipart/form-data">
     {{ upload_resources_form.hidden_tag() }}
 
