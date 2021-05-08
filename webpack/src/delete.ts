@@ -1,4 +1,4 @@
-import { add_button_listener, toggle_button, get_ajax_urls, set_spinner } from "./utils.js";
+import { add_button_listener, toggle_button, get_ajax_urls, set_spinner } from "./utils";
 
 // load urls from html
 let ajax_urls = get_ajax_urls(["confirm-delete"]);

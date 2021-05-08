@@ -1,4 +1,4 @@
-import { add_moments } from "./utils.js";
+import { add_moments } from "./utils";
 
 document.body.onload = () => {
     add_moments();

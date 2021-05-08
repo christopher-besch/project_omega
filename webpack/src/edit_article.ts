@@ -5,7 +5,7 @@ import {
     get_ajax_urls,
     set_logo,
     toggle_button,
-} from "./utils.js";
+} from "./utils";
 
 let ajax_urls = get_ajax_urls(["set-unlisted", "set-author"]);
 document.body.onload = () => {

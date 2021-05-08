@@ -15,6 +15,10 @@ def internal_error(error):
 
 
 @bp.app_errorhandler(401)
-def internal_error(error):
-    db.session.rollback()
+def access_denied_error(error):
     return render_template('401.html'), 401
+
+
+@bp.app_errorhandler(418)
+def teapot_error(error):
+    return render_template('418.html'), 418

@@ -15,5 +15,5 @@
 {% block scripts %}
 <ajax_url id="confirm-delete" url="{{ url_for('main.confirm_delete_article') }}" />
 
-<script type="module" src="{{ url_for('static', filename='js/delete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/delete.js') }}"></script>
 {% endblock %}

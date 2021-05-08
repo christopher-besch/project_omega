@@ -1,17 +1,17 @@
 import os
 import re
 
-from wtforms import meta
-
 from app import db
 from app.auth.access import author_required, edit_access_required
 from app.main import bp
-from app.main.forms import CreateArticleForm, MetaDataForm, UpdateArticleSourceForm
+from app.main.forms import (CreateArticleForm, MetaDataForm,
+                            UpdateArticleSourceForm)
 from app.models import Article, User
-from flask import (current_app, flash, jsonify, redirect, render_template,
-                   request, url_for)
+from flask import (abort, current_app, flash, jsonify, redirect,
+                   render_template, request, url_for)
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
+from wtforms import meta
 
 
 @bp.route("/")
@@ -192,3 +192,8 @@ def confirm_delete_article():
         flash('{} has been deleted!'.format(article.internal_name), "info")
         return jsonify({'success': True})
     return jsonify({'success': False})
+
+
+@bp.route("/marca")
+def marca():
+    abort(418)

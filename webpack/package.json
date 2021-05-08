@@ -1,0 +1,21 @@
+{
+    "name": "project_omega",
+    "version": "1.0.0",
+    "description": "",
+    "main": "",
+    "scripts": {
+        "serve": "webpack serve",
+        "build_release": "webpack --env=production",
+        "build_debug": "webpack --env=development",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "ts-loader": "^9.1.2",
+        "typescript": "^4.2.4",
+        "webpack": "^5.36.2",
+        "webpack-cli": "^4.7.0",
+        "webpack-dev-server": "^3.11.2"
+    }
+}

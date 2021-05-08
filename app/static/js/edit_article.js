@@ -1,18 +1,1 @@
-import { add_button_links, add_button_listener, add_moments, get_ajax_urls, set_logo, toggle_button, } from "./utils.js";
-let ajax_urls = get_ajax_urls(["set-unlisted", "set-author"]);
-document.body.onload = () => {
-    add_button_links();
-    add_button_listener("toggle-unlisted", (b) => {
-        let internal_name = b.dataset.internal_name;
-        toggle_button(b, ajax_urls["set-unlisted"], { internal_name }, (resp) => { });
-    });
-    add_button_listener("toggle-author", (b) => {
-        let username = b.dataset.username;
-        let internal_name = b.dataset.internal_name;
-        toggle_button(b, ajax_urls["set-author"], { username, internal_name }, (resp) => {
-            set_logo("is-author", username, resp.status);
-        });
-    });
-    add_moments();
-};
-//# sourceMappingURL=edit_article.js.map
+(()=>{"use strict";class t{constructor(t){let e=document.getElementById(t);this.url=e.getAttribute("url")}send(t,e,s=!0){let n=new XMLHttpRequest;n.onreadystatechange=function(){4==n.readyState&&e(JSON.parse(n.responseText),200===n.status)},n.open("POST",this.url,s),n.setRequestHeader("Content-Type","application/json"),n.send(JSON.stringify(t))}}function e(t,e){let s=document.getElementsByClassName(t);for(let t of s)t.addEventListener("click",(s=>{e(t)}))}function s(t,e,s="Loading..."){let n=t.getElementsByClassName("on-loads");for(let t of n)t.style.display=e?"inline-block":"none";e?t.setAttribute("disabled",""):t.removeAttribute("disabled"),t.getElementsByClassName("button-text")[0].innerText=s}function n(t,e,n,a){let l=JSON.parse(t.dataset.status),o=t.dataset.trueText,i=t.dataset.falseText;n.status=!l,e.send(n,((e,n)=>{n&&e.success?(a(e),s(t,!1,e.status?o:i),t.dataset.status=JSON.stringify(e.status)):s(t,!1,"Failure")})),s(t,!0)}let a=function(e){let s={};for(let e of["set-unlisted","set-author"])s[e]=new t(e);return s}();document.body.onload=()=>{e("button-link",(t=>{window.location.assign(t.dataset.url)})),e("toggle-unlisted",(t=>{let e=t.dataset.internal_name;n(t,a["set-unlisted"],{internal_name:e},(t=>{}))})),e("toggle-author",(t=>{let e=t.dataset.username,s=t.dataset.internal_name;n(t,a["set-author"],{username:e,internal_name:s},(t=>{!function(t,e,s){let n=document.getElementsByClassName("is-author");for(let t of n)t.dataset.id===e&&(t.style.display=s?"inline-block":"none")}(0,e,t.status)}))})),function(){let t=document.getElementsByClassName("moment-from-now");for(let e of t){let t=moment.utc(e.dataset.time,"YYYY-MM-DD HH:mm:ss.SSS");e.innerText=t.fromNow()}}()}})();
