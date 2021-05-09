@@ -1,10 +1,10 @@
-{# required parameters: id: str, url: str, text: str #}
+{# required parameters: id: str, url: str, text: str, timeout: int #}
 {% with %}
 {% set class="btn-danger confirm-delete" %}
 {% set status=true %}
 {% set true_text="Loading..." %}
 {% set false_text=text %}
-{% set data={"id":id, "url": url} %}
+{% set data={"id":id, "url": url, "timeout": timeout} %}
 {% set loading=True %}
 {% include "_toggle_button.html" %}
 {% endwith %}

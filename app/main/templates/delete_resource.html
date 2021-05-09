@@ -9,6 +9,7 @@
 {% set id=resource.id %}
 {% set url=url_for('main.edit_article', internal_name=resource.article.internal_name) %}
 {% set text="Delete Resource" %}
+{% set timeout=0 %}
 {% include "_confirm_delete_button.html" %}
 {% endwith %}
 {% endblock %}

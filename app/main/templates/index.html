@@ -2,11 +2,18 @@
 
 {% block content %}
 <h1>Welcome to Project Omega!</h1>
-This Website is under construction.<br /><br />
+<p>
+    This Website is under active construction by <a href="https://github.com/christopher-besch">Christopher
+        Besch</a>.
+    <br />
+    If you encounter any bugs, security issues or anything you would like be added, open an issue on <a
+        href="https://github.com/christopher-besch/project_omega">https://github.com/christopher-besch/project_omega</a>.
+</p>
+
 {% if current_user.is_anonymous %}
-<h3>You are not logged in.</h3><br />
+<h3>You are not logged in.</h3>
 {% else %}
-<h3>You are logged in as {{ current_user.username }}.</h3><br />
+<h3>You are logged in as {{ current_user.username }}.</h3>
 {% if current_user.is_admin %}
 You are an admin.<br />
 {% endif %}

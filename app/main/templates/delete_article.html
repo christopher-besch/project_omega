@@ -8,6 +8,7 @@
 {% set id=article.internal_name %}
 {% set url=url_for('main.articles') %}
 {% set text="Delete Article" %}
+{% set timeout=3000 %}
 {% include "_confirm_delete_button.html" %}
 {% endwith %}
 {% endblock %}

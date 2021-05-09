@@ -26,7 +26,7 @@
     {% endblock %}
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-light">
         <a class="navbar-brand" href="{{ url_for('main.index') }}">Project Omega</a>
@@ -84,6 +84,9 @@
                     <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                 </li>
                 {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/christopher-besch/project_omega">Source Code</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -106,13 +109,13 @@
 
             <!-- main block -->
             {% block content %}{% endblock %}
-            <hr>
         </div>
     </main>
 
     <!-- footer -->
-    <footer class="container">
-        <p>&copy; Christopher Besch 2021</p>
+    <footer class="container mt-auto">
+        <hr>
+        <p class="text-center">&copy; 2021 <a href="https://github.com/christopher-besch">Christopher Besch</a></p>
     </footer>
 
     <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap-native.min.js') }}"></script>

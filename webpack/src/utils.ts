@@ -10,7 +10,7 @@ export class AjaxAddress {
     private csrf_token: string;
 
     constructor(name: string) {
-        // load urls from html
+        // load urls and tokens from html
         let obj = document.getElementById(name)!;
         this.url = obj.getAttribute("url")!;
         this.csrf_token = obj.getAttribute("csrf_token")!;
@@ -50,7 +50,7 @@ export function get_ajax_urls(names: string[]): { [name: string]: AjaxAddress; }
 // button control //
 ////////////////////
 
-// add click listener to buttons of <button_class>
+// add click listener to buttons of class <class_name>
 export function add_button_listener(
     class_name: string,
     callback: { (button: HTMLButtonElement): void; }
@@ -84,6 +84,7 @@ export function set_spinner(
 }
 
 // button with two statuses
+// e.g. make and revoke admin
 export function toggle_button(
     button: HTMLButtonElement,
     ajax_address: AjaxAddress,

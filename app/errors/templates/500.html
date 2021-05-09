@@ -2,6 +2,13 @@
 
 {% block content %}
 <h1>500 An unexpected error has occurred</h1>
-<p>The administrator has been notified. Sorry for the inconvenience!</p>
+<!-- <p>The administrator has been notified. Sorry for the inconvenience!</p> -->
+<p>
+    Administrator notifications have not been implemented yet.
+    Please open an issue on <a
+        href="https://github.com/christopher-besch/project_omega">https://github.com/christopher-besch/project_omega</a>
+    and describe what happened.
+    Sorry for the inconvenience.
+</p>
 <p><a href="{{ url_for('main.index') }}">Back</a></p>
 {% endblock %}

@@ -1,5 +1,5 @@
 from app import db
-from app.admin import admin_required
+from app.auth.access import admin_required
 from app.auth import bp
 from app.auth.forms import ChangePasswordForm, LoginForm, SettingsForm
 from app.models import User

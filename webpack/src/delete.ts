@@ -18,10 +18,11 @@ document.body.onload = () => {
         "confirm-delete"
     ) as HTMLCollectionOf<HTMLButtonElement>;
     for (let button of buttons) {
+        let timeout = JSON.parse(button.dataset.timeout!) as number;
         set_spinner(button, true);
         window.setTimeout(() => {
             let text = button.dataset.falseText!;
             set_spinner(button, false, text);
-        }, 3000);
+        }, timeout);
     }
 };

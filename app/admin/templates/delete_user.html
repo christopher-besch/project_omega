@@ -8,6 +8,7 @@
 {% set id=user.username %}
 {% set url=url_for('admin.users') %}
 {% set text="Delete User" %}
+{% set timeout=3000 %}
 {% include "_confirm_delete_button.html" %}
 {% endwith %}
 {% endblock %}
