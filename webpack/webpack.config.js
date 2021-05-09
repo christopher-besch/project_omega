@@ -12,6 +12,7 @@ module.exports = (env) => {
             delete: "./src/delete.ts",
             edit_article: "./src/edit_article.ts",
             users: "./src/users.ts",
+            article: "./src/article.ts",
         },
         module: {
             rules: [

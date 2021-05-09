@@ -10,3 +10,20 @@
 <hr>
 {{ article.html|safe }}
 {% endblock %}
+
+{% block scripts %}
+{% for resource in article.resources %}
+{# don't provide token unless necessary #}
+{% if article.unlisted %}
+<dynamic_resource_url filename="{{ resource.filename }}"
+    address="{{ url_for('main.article_data', internal_name=article.internal_name, filename=resource.filename, token=article.gen_auth_token()) }}">
+</dynamic_resource_url>
+{% else %}
+<dynamic_resource_url filename="{{ resource.filename }}"
+    address="{{ url_for('main.article_data', internal_name=article.internal_name, filename=resource.filename) }}">
+</dynamic_resource_url>
+{% endif %}
+{% endfor %}
+
+<script src="{{ url_for('static', filename='js/article.js') }}"></script>
+{% endblock %}
