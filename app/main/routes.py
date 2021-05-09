@@ -144,6 +144,7 @@ def edit_article(internal_name: str):
                                 mimetype=mimetype, data=data)
             db.session.add(resource)
             article.add_resources(resource)
+        article.modify()
         db.session.commit()
         flash("The new resources have been uploaded.", "info")
         return redirect(request.url)
