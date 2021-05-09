@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from typing import Optional
 
 import jwt
 import markdown
@@ -23,15 +24,16 @@ def encode_auth_token(id: str) -> bytes:
     )
 
 
-def decode_auth_token(auth_token: bytes) -> str:
+# return None if invalid
+def decode_auth_token(auth_token: bytes) -> Optional[str]:
     try:
         payload = jwt.decode(auth_token, current_app.config.get(
             "SECRET_KEY"), algorithms=["HS256"])
         return payload["sub"]
     except jwt.ExpiredSignatureError:
-        return abort(401)
+        return None
     except jwt.InvalidTokenError:
-        return abort(401)
+        return None
 
 
 # relationships:
@@ -146,11 +148,10 @@ class Article(db.Model):
     def gen_auth_token(self) -> str:
         return encode_auth_token(self.internal_name)
 
-    def check_auth_token(self, token: str) -> None:
+    def check_auth_token(self, token: str) -> bool:
         # already checks if token has valid format
-        if decode_auth_token(token) != self.internal_name:
-            # when id is wrong
-            abort(401)
+        decoded = decode_auth_token(token)
+        return decoded is not None and decoded == self.internal_name
 
     def modify(self) -> None:
         self.last_modified = datetime.utcnow()

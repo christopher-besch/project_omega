@@ -46,8 +46,8 @@ def articles():
 def article(internal_name: str):
     article = Article.query.filter_by(
         internal_name=internal_name).first_or_404()
-    if article.unlisted:
-        article.check_auth_token(request.args.get("token"))
+    if article.unlisted and not article.check_auth_token(request.args.get("token")):
+        abort(404)
     return render_template("article.html", article=article, title=article.title)
 
 
@@ -57,8 +57,8 @@ def article_data(internal_name: str, filename: str):
     article = Article.query.filter_by(
         internal_name=internal_name).first_or_404()
     # token required when unlisted
-    if article.unlisted:
-        article.check_auth_token(request.args.get("token"))
+    if article.unlisted and not article.check_auth_token(request.args.get("token")):
+        abort(404)
     resource = Resource.query.filter(
         Resource.filename == filename and Resource.article == article).first_or_404()
     response = make_response(resource.data)
