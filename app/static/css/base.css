@@ -10,3 +10,7 @@ body {
 .default-inline {
     display: inline-block;
 }
+
+video {
+    padding-bottom: 1rem;
+}
